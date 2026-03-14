@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Osmar Dev | Fullstack Developer</title>
+  <meta name="description" content="Portafolio de Osmar, desarrollador Fullstack — proyectos, habilidades y contacto." />
+
+  <!-- Space Grotesk + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- HEADER -->
+  <header id="siteHeader">
+    <div class="container nav-container">
+      <a href="#inicio" class="logo" aria-label="Inicio">
+        <span class="logo-bracket">&lt;/&gt;</span>
+        <span>Osmar<strong>Dev</strong></span>
+      </a>
+
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir menú" aria-expanded="false" type="button">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <nav class="nav-links" id="navLinks" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#sobre-mi">Sobre mí</a>
+        <a href="#skills">Skills</a>
+        <a href="#proyectos">Proyectos</a>
+        <a href="#experiencia">Experiencia</a>
+        <a href="#contacto" class="nav-cta">Contacto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===================== HERO ===================== -->
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+
+        <!-- Left -->
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-pulse"></span>
+            <span class="mono">// disponible para proyectos</span>
+          </div>
+
+          <!-- .tl wrappers enable cinematic wipe-in per line -->
+          <h1 class="hero-title">
+            <span class="tl"><span>Desarrollador</span></span>
+            <span class="tl"><span class="accent">Fullstack</span></span>
+          </h1>
+
+          <p class="hero-typed-row mono">
+            <span class="typed-prompt">&gt;&nbsp;</span><span id="typed-role"></span>
+          </p>
+
+          <p class="hero-desc">
+            Construyo aplicaciones web completas — del backend al frontend, de la base de
+            datos al deploy. Enfocado en rendimiento, seguridad y código limpio.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#proyectos" class="btn btn-primary">
+              <i class="fa-solid fa-rocket"></i> Ver proyectos
+            </a>
+            <a href="#contacto" class="btn btn-outline">
+              <i class="fa-solid fa-envelope"></i> Contáctame
+            </a>
+            <a href="assets/Osmar-CV.pdf" class="btn btn-ghost" id="cvBtn" download>
+              <i class="fa-solid fa-file-arrow-down"></i> CV
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-num" data-counter="20">0</span>
+              <span class="stat-label">Proyectos</span>
+            </div>
+            <span class="stat-sep" aria-hidden="true"></span>
+            <div class="stat-item">
+              <span class="stat-num" data-counter="3">0</span>
+              <span class="stat-label">Años exp.</span>
+            </div>
+            <span class="stat-sep" aria-hidden="true"></span>
+            <div class="stat-item">
+              <span class="stat-num" data-counter="12">0</span>
+              <span class="stat-label">Tecnologías</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: code editor -->
+        <div class="hero-visual">
+          <div class="code-editor" data-tilt data-tilt-max="6" data-tilt-speed="400">
+            <div class="editor-topbar">
+              <div class="editor-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="editor-title mono">portfolio.ts</span>
+            </div>
+            <div class="editor-body">
+              <div class="editor-gutter mono" aria-hidden="true">
+                <span>01</span><span>02</span><span>03</span>
+                <span>04</span><span>05</span><span>06</span>
+                <span>07</span><span>08</span><span>09</span>
+                <span>10</span><span>11</span><span>12</span>
+              </div>
+              <pre class="editor-code mono"><code><span class="c-kw">const</span> <span class="c-fn">developer</span> <span class="c-op">=</span> {
+  <span class="c-prop">name</span><span class="c-op">:</span>     <span class="c-str">"Osmar Martínez"</span><span class="c-p">,</span>
+  <span class="c-prop">role</span><span class="c-op">:</span>     <span class="c-str">"Fullstack Dev"</span><span class="c-p">,</span>
+  <span class="c-prop">location</span><span class="c-op">:</span> <span class="c-str">"México 🇲🇽"</span><span class="c-p">,</span>
+  <span class="c-prop">stack</span><span class="c-op">:</span>    <span class="c-p">[</span>
+    <span class="c-str">"React"</span><span class="c-p">,</span> <span class="c-str">"Node.js"</span><span class="c-p">,</span>
+    <span class="c-str">"Laravel"</span><span class="c-p">,</span> <span class="c-str">"MySQL"</span>
+  <span class="c-p">],</span>
+  <span class="c-prop">available</span><span class="c-op">:</span> <span class="c-bool">true</span><span class="c-p">,</span>
+  <span class="c-prop">build</span><span class="c-op">:</span> <span class="c-p">(</span><span class="c-param">idea</span><span class="c-p">)</span> <span class="c-op">=&gt;</span>
+    <span class="c-fn">solve</span><span class="c-p">(</span><span class="c-param">idea</span><span class="c-p">),</span>
+<span class="c-p">}</span></code></pre>
+            </div>
+          </div>
+
+          <div class="editor-badges">
+            <div class="e-badge"><i class="fa-solid fa-server"></i> API REST</div>
+            <div class="e-badge"><i class="fa-solid fa-database"></i> SQL / NoSQL</div>
+            <div class="e-badge"><i class="fa-solid fa-shield-halved"></i> Seguridad</div>
+            <div class="e-badge"><i class="fa-brands fa-docker"></i> Docker</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================== ABOUT ===================== -->
+    <section id="sobre-mi">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-tag mono">// about_me</span>
+          <h2>¿Quién soy?</h2>
+          <p class="section-sub">Desarrollador Fullstack con enfoque en producto real</p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-main">
+            <p class="about-text">
+              Soy un desarrollador fullstack apasionado por construir productos que realmente funcionen.
+              Me muevo cómodamente entre frontend y backend, siempre con foco en rendimiento,
+              seguridad y experiencia de usuario. Trabajo con JavaScript, PHP y Python, y me
+              especializo en React, Node.js y Laravel.
+            </p>
+            <div class="about-tags">
+              <span class="tag"><i class="fa-brands fa-js"></i> JavaScript</span>
+              <span class="tag"><i class="fa-brands fa-react"></i> React / Next.js</span>
+              <span class="tag"><i class="fa-brands fa-node-js"></i> Node.js</span>
+              <span class="tag"><i class="fa-brands fa-php"></i> Laravel</span>
+              <span class="tag"><i class="fa-solid fa-database"></i> MySQL</span>
+              <span class="tag"><i class="fa-brands fa-docker"></i> Docker</span>
+              <span class="tag"><i class="fa-solid fa-gauge-high"></i> Performance</span>
+              <span class="tag"><i class="fa-solid fa-lock"></i> Seguridad</span>
+              <span class="tag"><i class="fa-solid fa-cloud"></i> Deploy</span>
+            </div>
+          </div>
+
+          <div class="about-cards">
+            <div class="about-card">
+              <div class="about-card-icon"><i class="fa-solid fa-laptop-code"></i></div>
+              <h4>Frontend</h4>
+              <p>React, Next.js, TypeScript, Tailwind — interfaces limpias y accesibles.</p>
+            </div>
+            <div class="about-card">
+              <div class="about-card-icon"><i class="fa-solid fa-server"></i></div>
+              <h4>Backend</h4>
+              <p>APIs REST con Node.js, Express, Laravel. Auth, roles y seguridad.</p>
+            </div>
+            <div class="about-card">
+              <div class="about-card-icon"><i class="fa-solid fa-database"></i></div>
+              <h4>Data</h4>
+              <p>MySQL, PostgreSQL, MongoDB. Consultas optimizadas y migraciones.</p>
+            </div>
+            <div class="about-card">
+              <div class="about-card-icon"><i class="fa-solid fa-rocket"></i></div>
+              <h4>Deploy</h4>
+              <p>Docker, VPS, Vercel, Railway. Entornos listos para producción.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TECH MARQUEE ===================== -->
+    <div class="tech-marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <!-- First copy -->
+        <div class="marquee-items">
+          <span>React</span><span>Node.js</span><span>Laravel</span>
+          <span>TypeScript</span><span>Next.js</span><span>MySQL</span>
+          <span>PostgreSQL</span><span>MongoDB</span><span>Docker</span>
+          <span>PHP</span><span>Python</span><span>Express</span>
+          <span>JWT</span><span>REST API</span><span>Git</span>
+          <span>Vercel</span><span>Linux</span><span>Tailwind</span>
+        </div>
+        <!-- Duplicate for seamless loop -->
+        <div class="marquee-items" aria-hidden="true">
+          <span>React</span><span>Node.js</span><span>Laravel</span>
+          <span>TypeScript</span><span>Next.js</span><span>MySQL</span>
+          <span>PostgreSQL</span><span>MongoDB</span><span>Docker</span>
+          <span>PHP</span><span>Python</span><span>Express</span>
+          <span>JWT</span><span>REST API</span><span>Git</span>
+          <span>Vercel</span><span>Linux</span><span>Tailwind</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== SKILLS ===================== -->
+    <section id="skills">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-tag mono">// tech_stack</span>
+          <h2>Habilidades</h2>
+          <p class="section-sub">Stack principal con nivel de dominio actualizado 2026</p>
+        </div>
+
+        <div class="skills-grid">
+          <div class="skill-group">
+            <div class="skill-group-header">
+              <i class="fa-solid fa-laptop-code"></i>
+              <h3>Frontend</h3>
+            </div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-info"><span>HTML / CSS / JS</span><span class="skill-pct mono">95%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="95"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>React / Next.js</span><span class="skill-pct mono">90%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>TypeScript</span><span class="skill-pct mono">85%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="85"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>Tailwind / UI Design</span><span class="skill-pct mono">88%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="skill-group">
+            <div class="skill-group-header">
+              <i class="fa-solid fa-server"></i>
+              <h3>Backend</h3>
+            </div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-info"><span>Node.js / Express</span><span class="skill-pct mono">88%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="88"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>PHP / Laravel</span><span class="skill-pct mono">92%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="92"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>REST APIs / JWT</span><span class="skill-pct mono">90%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>Python</span><span class="skill-pct mono">78%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="78"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="skill-group">
+            <div class="skill-group-header">
+              <i class="fa-solid fa-database"></i>
+              <h3>Data &amp; DevOps</h3>
+            </div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-info"><span>MySQL / PostgreSQL</span><span class="skill-pct mono">89%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="89"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>MongoDB</span><span class="skill-pct mono">75%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="75"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>Docker / Linux</span><span class="skill-pct mono">80%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="80"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>CI/CD</span><span class="skill-pct mono">70%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="70"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="skill-group">
+            <div class="skill-group-header">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+              <h3>Herramientas</h3>
+            </div>
+            <div class="skill-list">
+              <div class="skill-item">
+                <div class="skill-info"><span>Git / GitHub</span><span class="skill-pct mono">90%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="90"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>Postman / Swagger</span><span class="skill-pct mono">86%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="86"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>Figma / UI handoff</span><span class="skill-pct mono">76%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="76"></div></div>
+              </div>
+              <div class="skill-item">
+                <div class="skill-info"><span>Firebase / Vercel / Railway</span><span class="skill-pct mono">82%</span></div>
+                <div class="skill-bar"><div class="skill-fill" data-width="82"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PROJECTS ===================== -->
+    <section id="proyectos">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-tag mono">// selected_work</span>
+          <h2>Proyectos destacados</h2>
+          <p class="section-sub">Sistemas fullstack, dashboards y aplicaciones reales</p>
+        </div>
+
+        <div class="bento-grid" id="projectsGrid">
+          <article class="bento-card bento-featured">
+            <span class="bento-badge mono">Featured</span>
+            <div class="bento-icon"><i class="fa-solid fa-hospital"></i></div>
+            <h3>Sistema de Gestión Hospitalaria</h3>
+            <p>Módulos de solicitudes, notificaciones, materiales e historial con backend robusto, filtros dinámicos y consultas SQL optimizadas.</p>
+            <div class="bento-tags">
+              <span>Laravel</span><span>MySQL</span><span>JavaScript</span><span>Bootstrap</span>
+            </div>
+            <div class="bento-links">
+              <a href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Código</a>
+              <a href="#" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Demo</a>
+            </div>
+          </article>
+
+          <article class="bento-card">
+            <div class="bento-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <h3>Dashboard Analítico</h3>
+            <p>Panel con autenticación, reportes, gráficas y APIs en tiempo real.</p>
+            <div class="bento-tags"><span>React</span><span>Node.js</span><span>JWT</span></div>
+            <div class="bento-links">
+              <a href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+              <a href="#" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </div>
+          </article>
+
+          <article class="bento-card">
+            <div class="bento-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <h3>E-commerce + Admin</h3>
+            <p>Catálogo, carrito, órdenes, pagos simulados y panel de inventario.</p>
+            <div class="bento-tags"><span>Next.js</span><span>MongoDB</span><span>Stripe</span></div>
+            <div class="bento-links">
+              <a href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+              <a href="#" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </div>
+          </article>
+
+          <article class="bento-card">
+            <div class="bento-icon"><i class="fa-solid fa-video"></i></div>
+            <h3>App de Videollamadas</h3>
+            <p>Comunicación en tiempo real con WebRTC, salas y backend de sesiones.</p>
+            <div class="bento-tags"><span>React Native</span><span>WebRTC</span><span>Socket.io</span></div>
+            <div class="bento-links">
+              <a href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+              <a href="#" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </div>
+          </article>
+
+          <article class="bento-card">
+            <div class="bento-icon"><i class="fa-solid fa-code"></i></div>
+            <h3>CodeHub (PHP)</h3>
+            <p>Interfaz moderna para localhost — diseño limpio y amigable para dev local.</p>
+            <div class="bento-tags"><span>PHP</span><span>UI/UX</span><span>Frontend</span></div>
+            <div class="bento-links">
+              <a href="https://github.com/osmarmtzz/CodeHub" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+              <a href="https://github.com/osmarmtzz/CodeHub" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </div>
+          </article>
+
+          <article class="bento-card">
+            <div class="bento-icon"><i class="fa-solid fa-bolt"></i></div>
+            <h3>Scripts &amp; Automatizaciones</h3>
+            <p>Limpieza de datos, reportes y utilidades para acelerar flujos internos.</p>
+            <div class="bento-tags"><span>Python</span><span>Bash</span><span>ETL</span></div>
+            <div class="bento-links">
+              <a href="#" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a>
+              <a href="#" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== EXPERIENCE ===================== -->
+    <section id="experiencia">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-tag mono">// career_path</span>
+          <h2>Experiencia</h2>
+          <p class="section-sub">Roles y trayectoria profesional</p>
+        </div>
+
+        <div class="exp-list">
+          <div class="exp-item">
+            <div class="exp-num mono">01</div>
+            <div class="exp-body">
+              <div class="exp-top">
+                <h3>Desarrollador Fullstack</h3>
+                <span class="exp-date mono">2024 — Actual</span>
+              </div>
+              <div class="exp-company">Proyecto / Empresa</div>
+              <p>Desarrollo de módulos backend y frontend, consultas SQL, controladores, optimización de flujos, notificaciones e interfaces administrativas.</p>
+              <div class="exp-tags">
+                <span>Laravel</span><span>React</span><span>MySQL</span><span>REST API</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-num mono">02</div>
+            <div class="exp-body">
+              <div class="exp-top">
+                <h3>Desarrollo Web &amp; APIs</h3>
+                <span class="exp-date mono">2023 — 2024</span>
+              </div>
+              <div class="exp-company">Freelance / Colaboraciones</div>
+              <p>Construcción de sitios, dashboards y APIs REST; autenticación con tokens, despliegues e integración con servicios externos.</p>
+              <div class="exp-tags">
+                <span>Node.js</span><span>JWT</span><span>PostgreSQL</span><span>Vercel</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="exp-item">
+            <div class="exp-num mono">03</div>
+            <div class="exp-body">
+              <div class="exp-top">
+                <h3>Proyectos Académicos y Personales</h3>
+                <span class="exp-date mono">2021 — 2023</span>
+              </div>
+              <div class="exp-company">Ingeniería en Sistemas</div>
+              <p>Bases de datos, POO, redes, desarrollo web, apps móviles y prácticas de seguridad y ciberseguridad.</p>
+              <div class="exp-tags">
+                <span>Python</span><span>Java</span><span>MySQL</span><span>Linux</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CONTACT ===================== -->
+    <section id="contacto">
+      <div class="container">
+        <div class="contact-wrapper">
+
+          <div class="contact-left">
+            <span class="section-tag mono">// get_in_touch</span>
+            <h2>¿Hablamos?</h2>
+            <p>¿Tienes un proyecto, vacante o idea? Escríbeme y lo platicamos.</p>
+
+            <div class="contact-links">
+              <a class="c-link" href="mailto:osmar.dev@email.com">
+                <div class="c-link-icon"><i class="fa-solid fa-envelope"></i></div>
+                <div>
+                  <div class="c-link-label">Email</div>
+                  <div class="c-link-value">osmar.dev@email.com</div>
+                </div>
+              </a>
+              <a class="c-link" href="https://github.com/osmarmtzz" target="_blank" rel="noopener">
+                <div class="c-link-icon"><i class="fa-brands fa-github"></i></div>
+                <div>
+                  <div class="c-link-label">GitHub</div>
+                  <div class="c-link-value">github.com/osmarmtzz</div>
+                </div>
+              </a>
+              <a class="c-link" href="https://linkedin.com/in/tu-perfil" target="_blank" rel="noopener">
+                <div class="c-link-icon"><i class="fa-brands fa-linkedin"></i></div>
+                <div>
+                  <div class="c-link-label">LinkedIn</div>
+                  <div class="c-link-value">linkedin.com/in/tu-perfil</div>
+                </div>
+              </a>
+              <div class="c-link">
+                <div class="c-link-icon"><i class="fa-solid fa-location-dot"></i></div>
+                <div>
+                  <div class="c-link-label">Ubicación</div>
+                  <div class="c-link-value">México — remoto / híbrido</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="contact-right">
+            <form id="contactForm" novalidate>
+              <div class="field-wrap">
+                <label for="name">Nombre</label>
+                <input type="text" id="name" name="name" placeholder="Tu nombre" required />
+                <small class="field-error" id="nameError"></small>
+              </div>
+              <div class="field-wrap">
+                <label for="email">Correo</label>
+                <input type="email" id="email" name="email" placeholder="tu@email.com" required />
+                <small class="field-error" id="emailError"></small>
+              </div>
+              <div class="field-wrap">
+                <label for="message">Mensaje</label>
+                <textarea id="message" name="message" rows="5" placeholder="Cuéntame sobre tu proyecto..." required></textarea>
+                <small class="field-error" id="messageError"></small>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">
+                <i class="fa-solid fa-paper-plane"></i> Enviar mensaje
+              </button>
+              <div class="form-msg" id="formMsg" aria-live="polite"></div>
+              <a id="manualMailLink" class="btn btn-outline btn-full hidden" href="#" target="_blank" rel="noopener">
+                <i class="fa-solid fa-envelope-circle-check"></i> Abrir correo manualmente
+              </a>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-row">
+      <div class="footer-brand">
+        <span class="logo-bracket">&lt;/&gt;</span> OsmarDev
+      </div>
+      <div class="footer-copy">© <span id="currentYear"></span> · Fullstack Developer</div>
+      <div class="socials">
+        <a href="https://github.com/osmarmtzz" target="_blank" rel="noopener" aria-label="GitHub">
+          <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://linkedin.com/in/tu-perfil" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <i class="fa-brands fa-linkedin-in"></i>
+        </a>
+        <a href="#" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTopBtn" aria-label="Volver arriba">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
