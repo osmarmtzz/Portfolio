@@ -188,6 +188,7 @@
   /* ============================================================
      LANGUAGE SYSTEM
   ============================================================ */
+  let syncDots = () => {};   // set by initNav once the side dots exist
   let currentLang = "es";
   try { currentLang = localStorage.getItem("lang") === "en" ? "en" : "es"; } catch (_) { /* storage blocked */ }
 
@@ -221,6 +222,7 @@
       opt.classList.toggle("active", opt.dataset.lang === lang);
     });
 
+    syncDots();
     restartRotator();
     if (FX) FX.build();
   }
@@ -303,6 +305,24 @@
     const btn   = document.getElementById("menuBtn");
     const links = document.getElementById("navLinks");
 
+    // Side dots: one marker per section, labelled from the nav links
+    const menuLinks = [...document.querySelectorAll(".nav-links a[href^='#']")];
+    const dots = document.createElement("nav");
+    dots.className = "side-dots";
+    const dotLinks = menuLinks.map(link => {
+      const a = document.createElement("a");
+      a.href = link.getAttribute("href");
+      a.appendChild(document.createElement("span")).className = "side-dot-label";
+      dots.appendChild(a);
+      return a;
+    });
+    document.body.appendChild(dots);
+    syncDots = () => dotLinks.forEach((a, i) => {
+      a.firstChild.textContent = menuLinks[i].textContent;
+      a.setAttribute("aria-label", menuLinks[i].textContent);
+    });
+    syncDots();
+
     function setOpen(open) {
       if (!btn || !links) return;
       links.classList.toggle("open", open);
@@ -341,6 +361,7 @@
       let current = null;
       sections.forEach((s, i) => { if (tops[i] <= line) current = s.id; });
       navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + current));
+      dotLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + current));
     };
     measure(); mark();
     window.addEventListener("scroll", mark, { passive: true });
@@ -361,6 +382,17 @@
         card.style.setProperty("--mx", `${e.clientX - r.left}px`);
         card.style.setProperty("--my", `${e.clientY - r.top}px`);
       });
+    });
+
+    // Buttons: the hover fill grows from where the pointer is
+    document.querySelectorAll(".btn").forEach(btn => {
+      const place = e => {
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty("--bx", `${e.clientX - r.left}px`);
+        btn.style.setProperty("--by", `${e.clientY - r.top}px`);
+      };
+      btn.addEventListener("pointerenter", place);
+      btn.addEventListener("pointermove", place);
     });
 
     if (REDUCED) return;

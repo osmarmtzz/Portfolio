@@ -209,12 +209,16 @@
     const manifesto = document.querySelector(".manifesto");
     if (statement && manifesto) {
       const words = splitWords(manifesto);
-      gsap.timeline({
+      const tl = gsap.timeline({
         defaults: { ease: "none" },
         scrollTrigger: { trigger: statement, start: "top top", end: "bottom bottom", scrub: env.scrub },
-      })
-        .fromTo(words, { opacity: 0.12 }, { opacity: 1, stagger: 0.1 })
-        .to({}, { duration: words.length * 0.03 });   // hold the finished statement for a beat
+      }).fromTo(words, { opacity: 0.12 }, { opacity: 1, stagger: 0.1 }, 0);
+      // key phrases get underlined right after they light up
+      manifesto.querySelectorAll("strong").forEach(mark => {
+        const first = Math.max(0, words.indexOf(mark.querySelector(".w")));
+        tl.fromTo(mark, { "--mark": "0%" }, { "--mark": "100%", duration: 0.9 }, first * 0.1 + 0.3);
+      });
+      tl.to({}, { duration: words.length * 0.03 });   // hold the finished statement for a beat
     }
 
     gsap.utils.toArray(".about-text.scrub-text").forEach(el => {
@@ -261,13 +265,17 @@
             scrollTrigger: { trigger: card, start: "top bottom", end: "bottom top", scrub: env.scrub },
           });
         });
+        ScrollTrigger.create({
+          trigger: card, start: "top 72%", end: "bottom 28%",
+          toggleClass: { targets: card, className: "is-active" },
+        });
         const info = card.querySelector(".proj-info");
         gsap.fromTo(info, { y: 50, opacity: 0 }, {
           y: 0, opacity: 1, ease: "none",
           scrollTrigger: { trigger: info, start: "top 96%", end: "top 72%", scrub: env.scrub },
         });
       });
-      return;
+      return () => cards.forEach(card => card.classList.remove("is-active"));
     }
 
     section.classList.add("is-horizontal");
@@ -307,6 +315,12 @@
           { rotateY: 0, rotateX: 0, scale: 1, opacity: 1, duration: 0.5 })
         .to(card.querySelector(".mock"), { rotateY: 22, rotateX: -5, scale: 0.86, opacity: 0.4, duration: 0.5 });
 
+      // the slide in the middle of the screen is the active one: its mock-up animates (see styles.css)
+      ScrollTrigger.create({
+        containerAnimation: slide, trigger: card, start: "left 68%", end: "right 32%",
+        toggleClass: { targets: card, className: "is-active" },
+      });
+
       card.querySelectorAll(".float").forEach(badge => {
         const depth = parseFloat(badge.dataset.depth) || 1;
         gsap.fromTo(badge, { x: 120 * depth, y: 26 * depth }, {
@@ -324,6 +338,7 @@
       ScrollTrigger.removeEventListener("refreshInit", size);
       ScrollTrigger.removeEventListener("scrollEnd", rest);
       section.classList.remove("is-horizontal");
+      cards.forEach(card => card.classList.remove("is-active"));
       gallery.style.height = "";
       state.gallery = 0;
     };
@@ -386,6 +401,12 @@
           .fromTo(item, { x: 44, opacity: 0.1 }, { x: 0, opacity: 1, duration: 0.3 })
           .to(item, { opacity: 1, duration: 0.45 })
           .to(item, { opacity: 0.38, duration: 0.25 });
+      });
+
+      const list = job.querySelector(".job-list");
+      gsap.fromTo(list, { "--rail": 0 }, {
+        "--rail": 1, ease: "none",
+        scrollTrigger: { trigger: list, start: "top 62%", end: "bottom 62%", scrub: env.scrub },
       });
 
       const chips = job.querySelector(".job-card > .chips");
@@ -490,7 +511,7 @@
 
     splitName();
 
-    const tl = gsap.timeline({ paused: true, defaults: { ease: "power4.out" } })
+    const tl = gsap.timeline({ paused: true, defaults: { ease: "power4.out" }, onComplete: nameHover })
       .from(".hero-name .ch", { yPercent: 125, rotateX: -75, opacity: 0, transformPerspective: 700, duration: 1.35, stagger: 0.045 }, 0)
       .from(".site-header",   { yPercent: -120, opacity: 0, duration: 0.9, clearProps: "all" }, 0.25)
       .from(".hero-fade",     { opacity: 0, y: 30, duration: 1, stagger: 0.08, ease: "power3.out" }, 0.55)
@@ -508,6 +529,31 @@
     const wait  = ms => new Promise(resolve => setTimeout(resolve, ms));
     const fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
     Promise.race([fonts, wait(1200)]).then(() => tl.play(0));
+  }
+
+  // The letters of the name slim down and lift under the pointer (Geist is a
+  // variable font, so the weight can be animated).
+  function nameHover() {
+    const hero = document.querySelector(".hero");
+    const name = document.querySelector(".hero-name");
+    if (!hero || !name || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    const letters = [...name.querySelectorAll(".ch")].map(el => ({
+      el,
+      weight: gsap.quickTo(el, "fontWeight", { duration: 0.5, ease: "power3.out" }),
+      lift:   gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" }),
+    }));
+    hero.addEventListener("pointermove", e => {
+      const size   = parseFloat(getComputedStyle(name).fontSize);
+      const radius = size * 1.15;
+      letters.forEach(({ el, weight, lift }) => {
+        const r = el.getBoundingClientRect();
+        const d = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+        const near = Math.max(0, 1 - d / radius) ** 2;
+        weight(600 - 300 * near);
+        lift(-size * 0.03 * near);
+      });
+    });
+    hero.addEventListener("pointerleave", () => letters.forEach(({ weight, lift }) => { weight(600); lift(0); }));
   }
 
   // Tech marquee: runs on its own, speeds up with the scroll and follows its direction.

@@ -293,16 +293,20 @@ main, .site-footer { position: relative; z-index: 2; }
   transition: transform 0.35s var(--ease), box-shadow 0.35s ease, border-color 0.3s, color 0.3s, background 0.3s;
 }
 .btn i { font-size: 0.8rem; transition: transform 0.35s var(--ease); }
-.btn-primary { background: var(--btn-bg); color: var(--btn-fg); }
-.btn-primary::before {
-  content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, #f5b942, #ff7a3d);
-  opacity: 0; transition: opacity 0.4s ease;
+/* Hover fill grows from where the pointer is (--bx / --by set in main.js) */
+.btn::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  clip-path: circle(0% at var(--bx, 50%) var(--by, 50%));
+  transition: clip-path 0.6s var(--ease);
 }
-.btn-primary > * { position: relative; }
+.btn:hover::before { clip-path: circle(150% at var(--bx, 50%) var(--by, 50%)); }
+.btn > * { position: relative; }
+.btn-primary { background: var(--btn-bg); color: var(--btn-fg); }
+.btn-primary::before { background: linear-gradient(100deg, #f5b942, #ff7a3d); }
 .btn-primary:hover { color: #1a1002; box-shadow: 0 10px 40px -8px rgba(245, 185, 66, 0.55); }
-.btn-primary:hover::before { opacity: 1; }
 .btn-primary:hover i.fa-arrow-right { transform: translateX(4px); }
 .btn-ghost { border: 1px solid var(--line-2); color: var(--text); }
+.btn-ghost::before { background: rgba(var(--accent-rgb), 0.14); }
 .btn-ghost:hover { border-color: rgba(var(--accent-rgb), 0.6); color: var(--accent); }
 .btn-full { width: 100%; }
 .hidden { display: none !important; }
@@ -478,7 +482,10 @@ main, .site-footer { position: relative; z-index: 2; }
   font-size: clamp(1.45rem, 3vw, 2.9rem); font-weight: 500; line-height: 1.22; letter-spacing: -0.035em;
   color: var(--strong); max-width: 1120px; text-wrap: pretty;
 }
-.manifesto strong { font-weight: 500; color: var(--accent); }
+.manifesto strong {
+  font-weight: 500; color: var(--accent); padding-bottom: 0.04em;
+  background: linear-gradient(currentColor, currentColor) 0 100% / var(--mark, 0%) 2px no-repeat;
+}
 
 .about-main { display: grid; grid-template-columns: 1.15fr 1fr; gap: 4.5rem; align-items: start; margin-bottom: 4.5rem; }
 .about-text { color: var(--muted); font-size: 1.1rem; line-height: 1.8; max-width: 580px; }
@@ -531,6 +538,19 @@ main, .site-footer { position: relative; z-index: 2; }
 }
 .job-list li strong { color: var(--text); font-weight: 500; }
 .job-card > .chips { grid-column: 2; padding-top: 1.4rem; border-top: 1px solid var(--line); }
+
+/* Progress rail in the gutter between the two columns */
+.job-list { position: relative; }
+.job-list::before, .job-list::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 1px;
+  left: calc(clamp(2.5rem, 6vw, 6rem) / -2);
+}
+.job-list::before { background: var(--line); }
+.job-list::after {
+  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  transform: scaleY(var(--rail, 0)); transform-origin: 50% 0;
+  box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.7);
+}
 
 /* ---------- PROJECTS -------------------------------------- */
 #proyectos { padding-bottom: 0; }
@@ -666,13 +686,58 @@ main, .site-footer { position: relative; z-index: 2; }
 .float-a { top: -6%; right: -4%; }
 .float-b { bottom: 9%; left: -6%; width: 52px; height: 52px; font-size: 1.05rem; color: var(--accent-2); border-color: rgba(255, 122, 61, 0.4); }
 
+/* Mock-ups come alive while their slide is the active one (scroll.js toggles
+   .is-active). Gated by .stack-ready so they stay fully drawn without JS. */
+.stack-ready .mock :is(.bubble, .mock-record, .task, .audit-row) {
+  opacity: 0.22; transform: translateY(12px);
+  transition: opacity 0.6s ease, transform 0.7s var(--ease);
+}
+.stack-ready .proj.is-active .mock :is(.bubble, .mock-record, .task, .audit-row) { opacity: 1; transform: none; }
+.stack-ready .proj.is-active .mock :is(.bubble, .mock-record, .task, .audit-row):nth-child(2) { transition-delay: 0.14s; }
+.stack-ready .proj.is-active .mock :is(.bubble, .mock-record, .task, .audit-row):nth-child(3) { transition-delay: 0.28s; }
+.stack-ready .proj.is-active .mock :is(.bubble, .mock-record, .task, .audit-row):nth-child(4) { transition-delay: 0.42s; }
+.stack-ready .proj.is-active .mock :is(.bubble, .mock-record, .task, .audit-row):nth-child(5) { transition-delay: 0.56s; }
+
+.stack-ready .mock .sk.hi { transform-origin: 0 50%; transform: scaleX(0.2); transition: transform 1s var(--ease) 0.35s; }
+.stack-ready .proj.is-active .mock .sk.hi { transform: scaleX(1); }
+.stack-ready .tick { transition: background 0.4s ease; }
+.stack-ready .proj.is-active .audit-row .tick { background: var(--accent); }
+.stack-ready .proj.is-active .audit-row:nth-child(3) .tick { transition-delay: 0.3s; }
+.stack-ready .proj.is-active .audit-row:nth-child(4) .tick { transition-delay: 0.5s; }
+.stack-ready .proj.is-active .audit-row:nth-child(5) .tick { transition-delay: 0.7s; }
+
+.proj.is-active .vault-ring { animation: ringPulse 2.4s ease-out infinite; }
+.proj.is-active .avatar { animation: ringPulse 2.2s ease-out infinite; }
+.proj.is-active .mock-input i { animation: nudge 1.8s var(--ease) infinite; }
+.float i { animation: bob 4.5s ease-in-out infinite; }
+.float-b i { animation-delay: -2.2s; }
+@keyframes ringPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.45), 0 0 0 0 rgba(var(--accent-rgb), 0.2); }
+  100% { box-shadow: 0 0 0 22px rgba(var(--accent-rgb), 0), 0 0 0 44px rgba(var(--accent-rgb), 0); }
+}
+@keyframes nudge { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+@keyframes bob { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(3px); } }
+
 /* ---------- SKILLS ---------------------------------------- */
-.skills-grid { border-bottom: 1px solid var(--line-2); }
+.skills-grid { border-bottom: 1px solid var(--line-2); counter-reset: skill; }
 .skill {
   display: grid; grid-template-columns: 3.4rem minmax(200px, 1fr) minmax(0, 2.1fr);
-  align-items: center; gap: 1.5rem; padding: 1.5rem 0; border-top: 1px solid var(--line-2);
+  align-items: center; gap: 1.5rem; padding: 1.5rem 3.2rem 1.5rem 0; border-top: 1px solid var(--line-2);
+  position: relative; isolation: isolate; counter-increment: skill;
   transition: padding 0.45s var(--ease);
 }
+/* accent wash sweeps in from the left on hover; row number on the right */
+.skill::before {
+  content: ""; position: absolute; inset: 0 -1rem; z-index: -1; border-radius: 14px;
+  background: rgba(var(--accent-rgb), 0.08);
+  transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.55s var(--ease);
+}
+.skill:hover::before { transform: scaleX(1); }
+.skill::after {
+  content: counter(skill, decimal-leading-zero); position: absolute; right: 0.4rem; top: 50%; translate: 0 -50%;
+  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--dim); transition: color 0.3s;
+}
+.skill:hover::after { color: var(--accent); }
 .skill header { display: contents; }
 .skill h3 {
   font-size: clamp(1.25rem, 2.2vw, 1.9rem); font-weight: 500; letter-spacing: -0.03em; line-height: 1.15; color: var(--strong);
@@ -793,6 +858,27 @@ a.contact-row:hover .contact-arrow { transform: rotate(0deg); color: var(--accen
 .scroll-top-btn.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .scroll-top-btn:hover { border-color: #f5b942; color: #f5b942; }
 
+/* ---------- SIDE DOTS ------------------------------------- */
+/* One marker per section; the label slides out on hover (built by main.js) */
+.side-dots {
+  position: fixed; right: 1.4rem; top: 50%; z-index: 850; translate: 0 -50%;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.side-dots a { position: relative; display: flex; align-items: center; justify-content: flex-end; padding: 5px 0 5px 22px; }
+.side-dots a::before {
+  content: ""; width: 6px; height: 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.28);
+  transition: height 0.45s var(--ease), background 0.3s;
+}
+.side-dots a:hover::before { background: #fff; }
+.side-dots a.active::before { height: 24px; background: linear-gradient(180deg, #f5b942, #ff7a3d); }
+.side-dot-label {
+  position: absolute; right: 20px; white-space: nowrap; pointer-events: none;
+  font-size: 0.72rem; color: #ede9e3; padding: 0.25rem 0.65rem; border-radius: 100px;
+  background: rgba(12, 10, 9, 0.85); border: 1px solid rgba(255, 255, 255, 0.12);
+  opacity: 0; transform: translateX(8px); transition: opacity 0.3s, transform 0.35s var(--ease);
+}
+.side-dots a:hover .side-dot-label { opacity: 1; transform: none; }
+
 /* ---------- RESPONSIVE ------------------------------------ */
 @media (max-width: 1100px) {
   .logo-name { display: none; }
@@ -831,6 +917,8 @@ a.contact-row:hover .contact-arrow { transform: rotate(0deg); color: var(--accen
   .job-card { grid-template-columns: 1fr; }
   .job-head { position: static; grid-row: auto; margin-bottom: 1.8rem; }
   .job-intro, .job-list, .job-card > .chips { grid-column: 1; }
+  .job-list::before, .job-list::after { display: none; }
+  .side-dots { display: none; }
 
   .gallery { padding: 3rem 1.25rem 4.5rem; }
   .bento { gap: 4.5rem; }
