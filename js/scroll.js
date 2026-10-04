@@ -2,7 +2,7 @@
    Scroll-driven animations — GSAP + ScrollTrigger + Lenis
 
    How this file is organised:
-   - CONFIG holds every tunable (scrub smoothing, pin length, breakpoints).
+   - CONFIG holds every tunable (scrub smoothing, pin lengths, breakpoints).
    - Each section has its own *Fx function. They are listed in MODULES;
      remove one from that list to switch its animation off.
    - Everything is scrubbed, so it plays forwards and backwards with the
@@ -13,11 +13,12 @@
   "use strict";
 
   const CONFIG = {
-    smooth:  { duration: 1.15 },
-    scrub:   0.7,                 // seconds of catch-up on desktop; touch devices are locked 1:1
-    hero:    { pinLength: 0.85 }, // extra scroll while the hero stays pinned, in viewport heights
-    pinQuery: "(min-width: 901px) and (min-height: 760px)", // pinned hero + horizontal gallery
-    marquee: { baseSpeed: 0.7, boost: 0.45 },
+    smooth:    { duration: 1.2 },
+    scrub:     0.8,                  // seconds of catch-up on desktop; touch devices are locked 1:1
+    hero:      { pinLength: 1.0 },   // extra scroll while a section stays pinned, in viewport heights
+    manifesto: { pinLength: 0.9 },
+    pinQuery:  "(min-width: 901px) and (min-height: 760px)", // pinned scenes + horizontal gallery
+    marquee:   { baseSpeed: 0.8, boost: 0.5 },
   };
 
   const HAS_GSAP    = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
@@ -113,18 +114,37 @@
     return [...el.querySelectorAll(".w")];
   }
 
+  // Hero name: one span per letter. The accent line gets a colour per letter
+  // because a clipped background gradient does not survive per-letter transforms.
+  function splitName() {
+    document.querySelectorAll(".hero-name .line").forEach(line => {
+      const letters = [...line.textContent];
+      const accent  = line.classList.contains("accent-text");
+      const colour  = gsap.utils.interpolate("#4fe3b5", "#6ea8ff");
+      line.textContent = "";
+      letters.forEach((letter, i) => {
+        const span = document.createElement("span");
+        span.className = "ch";
+        span.textContent = letter;
+        if (accent) span.style.color = colour(letters.length > 1 ? i / (letters.length - 1) : 0);
+        line.appendChild(span);
+      });
+      if (accent) line.classList.add("is-split");
+    });
+  }
+
   /* ============================================================
      SECTION MODULES
      env = { pin: boolean, scrub: number | true }
   ============================================================ */
 
-  // Hero: stays pinned while the name splits apart, the copy lifts away and
-  // the orb pushes in (scene.js follows state.hero).
+  // Hero: stays pinned while the camera flies through the name and dives
+  // towards the waves (scene.js follows state.hero).
   function heroFx(env) {
     const hero = document.querySelector(".hero");
     if (!hero) return;
     const sync = self => { state.hero = self.progress; };
-    gsap.timeline({
+    const tl = gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {
         trigger: hero,
@@ -133,12 +153,46 @@
         pin: env.pin, anticipatePin: 1, scrub: env.scrub,
         onUpdate: sync, onRefresh: sync,
       },
-    })
-      .to(".hero-name .line-mask:nth-child(1)", { xPercent: -14, opacity: 0, duration: 0.6 }, 0)
-      .to(".hero-name .line-mask:nth-child(2)", { xPercent: 16,  opacity: 0, duration: 0.6 }, 0.06)
-      .to(".hero-row",   { y: -90, opacity: 0, duration: 0.5, stagger: 0.07 }, 0.04)
-      .to(".hero-stats", { y: 50,  opacity: 0, duration: 0.4 }, 0);
+    });
+    tl.to(".hero-bottom", { y: 70,  opacity: 0, duration: 0.3 }, 0)
+      .to(".hero-top",    { y: -40, opacity: 0, duration: 0.3 }, 0);
+    if (env.pin) {
+      tl.to(".hero-name", { scale: 7, duration: 1, ease: "power2.in" }, 0)
+        .to(".hero-name", { opacity: 0, duration: 0.35 }, 0.6);
+    } else {
+      tl.to(".hero-name", { yPercent: -35, opacity: 0, duration: 1 }, 0);
+    }
     return () => { state.hero = 0; };
+  }
+
+  // About: the statement holds the screen while it lights up word by word,
+  // then the supporting copy and the pillar cards fall into place.
+  function aboutFx(env) {
+    const intro     = document.querySelector(".about-intro");
+    const manifesto = document.querySelector(".manifesto");
+    if (intro && manifesto) {
+      gsap.fromTo(splitWords(manifesto),
+        { opacity: 0.14 },
+        { opacity: 1, ease: "none", stagger: 0.1,
+          scrollTrigger: env.pin
+            ? { trigger: intro, start: "center center", end: () => "+=" + window.innerHeight * CONFIG.manifesto.pinLength,
+                pin: true, anticipatePin: 1, scrub: env.scrub }
+            : { trigger: manifesto, start: "top 84%", end: "bottom 45%", scrub: env.scrub } });
+    }
+
+    gsap.utils.toArray(".about-text.scrub-text").forEach(el => {
+      gsap.fromTo(splitWords(el),
+        { opacity: 0.16 },
+        { opacity: 1, ease: "none", stagger: 0.1,
+          scrollTrigger: { trigger: el, start: "top 88%", end: "bottom 55%", scrub: env.scrub } });
+    });
+
+    const pillars = gsap.utils.toArray(".pillar");
+    if (!pillars.length) return;
+    gsap.fromTo(pillars,
+      { y: 150, rotateX: -32, rotateZ: i => (i % 2 ? 5 : -5), scale: 0.84, opacity: 0, transformOrigin: "50% 100%" },
+      { y: 0, rotateX: 0, rotateZ: 0, scale: 1, opacity: 1, ease: "none", stagger: 0.2,
+        scrollTrigger: { trigger: ".pillars", start: "top 96%", end: "top 36%", scrub: env.scrub } });
   }
 
   // Projects: on large screens the section pins and the cards travel
@@ -165,6 +219,9 @@
     const count = document.getElementById("projCount");
     const total = String(cards.length).padStart(2, "0");
     const distance = () => Math.max(0, track.scrollWidth - track.parentElement.clientWidth);
+    // The track leans into the movement and settles when the scroll stops
+    const lean  = gsap.quickTo(track, "skewX", { duration: 0.5, ease: "power3.out" });
+    const rest  = () => lean(0);
     const sync = self => {
       state.gallery = self.progress;
       if (fill)  fill.style.transform = `scaleX(${self.progress.toFixed(4)})`;
@@ -176,25 +233,29 @@
       scrollTrigger: {
         trigger: section, start: "top top", end: () => "+=" + distance(),
         pin: true, anticipatePin: 1, scrub: env.scrub, invalidateOnRefresh: true,
-        onUpdate: sync, onRefresh: sync,
+        onUpdate: self => { sync(self); lean(gsap.utils.clamp(-4, 4, self.getVelocity() / -400)); },
+        onRefresh: sync,
       },
     });
+    ScrollTrigger.addEventListener("scrollEnd", rest);
 
     cards.forEach((card, i) => {
       if (i === 0) return;
       gsap.fromTo(card,
-        { rotateY: -30, scale: 0.84, opacity: 0.2, transformOrigin: "0% 50%" },
+        { rotateY: -32, scale: 0.82, opacity: 0.15, transformOrigin: "0% 50%" },
         { rotateY: 0, scale: 1, opacity: 1, ease: "none",
-          scrollTrigger: { containerAnimation: slide, trigger: card, start: "left 108%", end: "left 62%", scrub: true } });
+          scrollTrigger: { containerAnimation: slide, trigger: card, start: "left 110%", end: "left 62%", scrub: true } });
     });
 
     return () => {
+      ScrollTrigger.removeEventListener("scrollEnd", rest);
       section.classList.remove("is-horizontal");
       state.gallery = 0;
     };
   }
 
-  // Section headers, titles (word-by-word mask reveal) and small generic blocks.
+  // Section headers, titles (word-by-word mask reveal), the outlined section
+  // numbers drifting behind them, and small generic blocks.
   function headingsFx(env) {
     gsap.utils.toArray(".sec-head").forEach(head => {
       gsap.timeline({
@@ -208,9 +269,16 @@
 
     gsap.utils.toArray(".sec-title").forEach(title => {
       gsap.fromTo(splitTitle(title),
-        { yPercent: 120, rotate: 4, transformOrigin: "0% 100%" },
+        { yPercent: 120, rotate: 5, transformOrigin: "0% 100%" },
         { yPercent: 0, rotate: 0, ease: "power2.out", stagger: 0.12,
           scrollTrigger: { trigger: title, start: "clamp(top 94%)", end: "clamp(top 58%)", scrub: env.scrub } });
+    });
+
+    gsap.utils.toArray(".sec-ghost").forEach(ghost => {
+      gsap.fromTo(ghost, { yPercent: 40 }, {
+        yPercent: -40, ease: "none",
+        scrollTrigger: { trigger: ghost.parentElement, start: "top bottom", end: "bottom top", scrub: env.scrub },
+      });
     });
 
     gsap.utils.toArray(".reveal").forEach(el => {
@@ -221,48 +289,37 @@
     });
   }
 
-  // About: the copy lights up word by word; the pillar cards fall into place.
-  function aboutFx(env) {
-    gsap.utils.toArray(".scrub-text").forEach(el => {
-      gsap.fromTo(splitWords(el),
-        { opacity: 0.16 },
-        { opacity: 1, ease: "none", stagger: 0.1,
-          scrollTrigger: { trigger: el, start: "top 86%", end: "bottom 52%", scrub: env.scrub } });
-    });
-
-    const pillars = gsap.utils.toArray(".pillar");
-    if (!pillars.length) return;
-    gsap.fromTo(pillars,
-      { y: 150, rotateX: -32, rotateZ: i => (i % 2 ? 5 : -5), scale: 0.84, opacity: 0, transformOrigin: "50% 100%" },
-      { y: 0, rotateX: 0, rotateZ: 0, scale: 1, opacity: 1, ease: "none", stagger: 0.2,
-        scrollTrigger: { trigger: ".pillars", start: "top 96%", end: "top 36%", scrub: env.scrub } });
-  }
-
-  // Experience: the rail draws itself, cards tip forward into view and each
-  // bullet slides in as the reader reaches it.
+  // Experience: the role column slides in and stays in view while each
+  // achievement comes into focus as it crosses the screen, then recedes.
   function experienceFx(env) {
-    gsap.fromTo(".timeline-progress", { scaleY: 0 }, {
-      scaleY: 1, ease: "none",
-      scrollTrigger: { trigger: ".timeline", start: "top 62%", end: "bottom 68%", scrub: env.scrub },
-    });
-
     gsap.utils.toArray(".job").forEach(job => {
-      const card = job.querySelector(".job-card");
-      const dot  = job.querySelector(".job-dot");
-      gsap.fromTo(card,
-        { y: 110, scale: 0.93, rotateX: 8, opacity: 0, transformPerspective: 1400, transformOrigin: "50% 0%" },
-        { y: 0, scale: 1, rotateX: 0, opacity: 1, ease: "none",
-          scrollTrigger: { trigger: job, start: "top 98%", end: "top 60%", scrub: env.scrub } });
-      gsap.fromTo(dot, { scale: 0 }, {
-        scale: 1, ease: "none",
-        scrollTrigger: { trigger: job, start: "top 78%", end: "top 62%", scrub: env.scrub },
+      gsap.fromTo(job.querySelector(".job-head"),
+        { x: -50, opacity: 0 },
+        { x: 0, opacity: 1, ease: "none",
+          scrollTrigger: { trigger: job, start: "top 90%", end: "top 55%", scrub: env.scrub } });
+
+      gsap.fromTo(job.querySelector(".job-intro"),
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, ease: "none",
+          scrollTrigger: { trigger: job, start: "top 88%", end: "top 58%", scrub: env.scrub } });
+
+      job.querySelectorAll(".job-list li").forEach(item => {
+        gsap.timeline({
+          defaults: { ease: "none" },
+          scrollTrigger: { trigger: item, start: "top 94%", end: "top 10%", scrub: env.scrub },
+        })
+          .fromTo(item, { x: 44, opacity: 0.1 }, { x: 0, opacity: 1, duration: 0.3 })
+          .to(item, { opacity: 1, duration: 0.45 })
+          .to(item, { opacity: 0.38, duration: 0.25 });
       });
-      job.querySelectorAll(".job-list li, .job-card > .chips").forEach(item => {
-        gsap.fromTo(item,
-          { x: -28, opacity: 0 },
-          { x: 0, opacity: 1, ease: "none",
-            scrollTrigger: { trigger: item, start: "top 95%", end: "top 78%", scrub: env.scrub } });
-      });
+
+      const chips = job.querySelector(".job-card > .chips");
+      if (chips) {
+        gsap.fromTo(chips, { y: 30, opacity: 0 }, {
+          y: 0, opacity: 1, ease: "none",
+          scrollTrigger: { trigger: chips, start: "top 96%", end: "top 80%", scrub: env.scrub },
+        });
+      }
     });
   }
 
@@ -309,28 +366,31 @@
         scrollTrigger: { trigger: ".contact-form", start: "clamp(top 96%)", end: "clamp(top 48%)", scrub: env.scrub } });
   }
 
-  // Footer: the outlined name drifts across as the page ends.
+  // Footer: the outlined name drifts across and fills with colour as the page ends.
   function footerFx(env) {
-    gsap.fromTo(".foot-giant span", { xPercent: 9 }, {
-      xPercent: -9, ease: "none",
+    gsap.fromTo(".foot-giant span", { xPercent: 6, "--fill": "0%" }, {
+      xPercent: -6, "--fill": "100%", ease: "none",
       scrollTrigger: { trigger: ".site-footer", start: "top bottom", end: "bottom bottom", scrub: env.scrub },
     });
   }
 
   // Section hand-offs: outgoing content recedes while the next one arrives.
+  // (About uses its grid, not the container: a transformed ancestor would break the pinned statement.)
   function transitionsFx(env) {
-    ["#sobre-mi", "#experiencia", "#skills", "#educacion"].forEach(id => {
-      const section = document.querySelector(id);
-      if (!section) return;
-      gsap.to(section.querySelector(".container"), {
-        scale: 0.95, opacity: 0.15, transformOrigin: "50% 100%", ease: "none",
-        scrollTrigger: { trigger: section, start: "bottom 55%", end: "bottom 6%", scrub: env.scrub },
+    [["#sobre-mi", ".about-grid"], ["#experiencia", ".container"], ["#skills", ".container"], ["#educacion", ".container"]]
+      .forEach(([id, inner]) => {
+        const section = document.querySelector(id);
+        const target  = section && section.querySelector(inner);
+        if (!target) return;
+        gsap.to(target, {
+          scale: 0.95, opacity: 0.15, transformOrigin: "50% 100%", ease: "none",
+          scrollTrigger: { trigger: section, start: "bottom 55%", end: "bottom 6%", scrub: env.scrub },
+        });
       });
-    });
   }
 
-  // Pinned modules come first so everything below them measures correctly.
-  const MODULES = [heroFx, galleryFx, headingsFx, aboutFx, experienceFx, skillsFx, educationFx, contactFx, footerFx, transitionsFx];
+  // Modules that pin come first and in page order, so everything below them measures correctly.
+  const MODULES = [heroFx, aboutFx, galleryFx, headingsFx, experienceFx, skillsFx, educationFx, contactFx, footerFx, transitionsFx];
 
   /* ============================================================
      BUILD / TEARDOWN
@@ -370,23 +430,20 @@
   /* ============================================================
      ONE-OFF PIECES (not tied to the scroll position)
   ============================================================ */
-  // Preloader lift + hero entrance. Intro tweens target the inner elements;
-  // heroFx animates their wrappers, so the two never fight over a property.
+  // Preloader count + lift, then the hero entrance. Intro tweens target the
+  // letters and the .hero-fade items; heroFx animates their wrappers, so the
+  // two never fight over a property.
   function intro() {
-    const pre = document.getElementById("preloader");
+    const pre   = document.getElementById("preloader");
+    const count = document.getElementById("preloaderCount");
     if (!enabled()) { if (pre) pre.remove(); return; }
 
-    document.querySelectorAll(".hero-content > .hero-fade").forEach(el => {
-      const row = document.createElement("div");
-      row.className = "hero-row";
-      el.replaceWith(row);
-      row.appendChild(el);
-    });
+    splitName();
 
     const tl = gsap.timeline({ paused: true, defaults: { ease: "power4.out" } })
-      .from(".site-header",     { yPercent: -120, opacity: 0, duration: 0.9, clearProps: "all" }, 0)
-      .from(".hero-name .line", { yPercent: 115, rotateX: -55, duration: 1.25, stagger: 0.12 }, 0.1)
-      .from(".hero-fade, .hero-stats > *", { opacity: 0, y: 26, duration: 0.9, stagger: 0.08, ease: "power3.out" }, 0.45)
+      .from(".hero-name .ch", { yPercent: 125, rotateX: -75, opacity: 0, transformPerspective: 700, duration: 1.35, stagger: 0.045 }, 0)
+      .from(".site-header",   { yPercent: -120, opacity: 0, duration: 0.9, clearProps: "all" }, 0.25)
+      .from(".hero-fade",     { opacity: 0, y: 30, duration: 1, stagger: 0.08, ease: "power3.out" }, 0.55)
       .add(() => {
         document.querySelectorAll("[data-counter]").forEach(el => {
           const counter = { v: 0 };
@@ -395,13 +452,22 @@
             onUpdate: () => { el.textContent = Math.round(counter.v); },
           });
         });
-      }, 0.7);
+      }, 0.9);
 
-    const wait  = ms => new Promise(resolve => setTimeout(resolve, ms));
-    const fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    Promise.race([Promise.all([fonts, wait(650)]), wait(2500)]).then(() => {
-      if (pre) gsap.to(pre, { yPercent: -100, duration: 0.85, ease: "power4.inOut", onComplete: () => pre.remove() });
-      gsap.delayedCall(pre ? 0.3 : 0, () => tl.play(0));
+    const wait   = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const fonts  = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    const tally  = { v: 0 };
+    const counted = new Promise(resolve => {
+      if (!count) { resolve(); return; }
+      gsap.to(tally, {
+        v: 100, duration: 1, ease: "power2.inOut",
+        onUpdate: () => { count.textContent = Math.round(tally.v); },
+        onComplete: resolve,
+      });
+    });
+    Promise.race([Promise.all([fonts, counted]), wait(2600)]).then(() => {
+      if (pre) gsap.to(pre, { yPercent: -100, duration: 0.9, ease: "power4.inOut", onComplete: () => pre.remove() });
+      gsap.delayedCall(pre ? 0.35 : 0, () => tl.play(0));
     });
   }
 

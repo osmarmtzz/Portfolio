@@ -129,6 +129,8 @@ uniform float uTime;
 uniform float uPhase;       // advances with the scroll, so the lights move between sections
 uniform float uAspect;
 uniform float uIntensity;
+uniform float uHorizon;     // screen height (0-1) of the wave field's horizon
+uniform float uTone;        // 0 = mint, 1 = violet: shifts the mood between sections
 uniform vec3 uMint;
 uniform vec3 uBlue;
 uniform vec3 uViolet;
@@ -142,10 +144,15 @@ float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453
 void main(){
   float t = uTime * 0.05;
   vec2 uv = vUv + snoise(vec3(vUv * 1.3, t)) * 0.07;
+  vec3 warm = mix(uMint, uViolet, uTone);
   vec3 c = vec3(0.0);
-  c += light(uv, vec2(0.74 + 0.12 * sin(uPhase * 1.3 + t), 0.50 + 0.12 * cos(uPhase * 0.9)), 0.44, uMint) * 0.17;
+  c += light(uv, vec2(0.74 + 0.12 * sin(uPhase * 1.3 + t), 0.50 + 0.12 * cos(uPhase * 0.9)), 0.44, warm) * 0.17;
   c += light(uv, vec2(0.30 + 0.26 * sin(uPhase * 0.8 + 2.0), 0.32 + 0.14 * sin(uPhase * 1.1 + t * 1.3)), 0.52, uBlue) * 0.14;
   c += light(uv, vec2(0.55 + 0.30 * cos(uPhase * 0.6 + 4.0), 0.88), 0.40, uViolet) * 0.09;
+  // light resting on the horizon, sweeping sideways as the page scrolls
+  float band  = exp(-pow((vUv.y - uHorizon) / 0.075, 2.0));
+  float sweep = 0.55 + 0.45 * snoise(vec3(vUv.x * 1.6 + uPhase * 0.4, t * 2.0, 3.0));
+  c += mix(warm, uBlue, vUv.x) * band * sweep * 0.17;
   c *= (0.8 + 0.2 * snoise(vec3(vUv * 2.4, t * 1.5))) * uIntensity;
   c += (hash(gl_FragCoord.xy) - 0.5) / 255.0;          // dither: hides banding in the dark gradients
   float a = clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0);
@@ -200,6 +207,7 @@ function init() {
   const auroraMat = new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 0 }, uPhase: { value: 0 }, uAspect: { value: 1 }, uIntensity: { value: 1 },
+      uHorizon: { value: 0.5 }, uTone: { value: 0 },
       uMint: { value: MINT }, uBlue: { value: BLUE }, uViolet: { value: VIOLET },
     },
     vertexShader: AURORA_VERTEX,
@@ -229,7 +237,7 @@ function init() {
     uniforms: {
       uTime: { value: 0 }, uTravel: { value: 0 }, uShift: { value: 0 }, uAmp: { value: 1 }, uMask: { value: 1 },
       uSize: { value: small ? 13 : 15 }, uPixelRatio: { value: 1 }, uHalfX: { value: FIELD.halfX },
-      uColorA: { value: MINT }, uColorB: { value: BLUE }, uOpacity: { value: 1 },
+      uColorA: { value: MINT.clone() }, uColorB: { value: BLUE }, uOpacity: { value: 1 },
     },
     vertexShader: FIELD_VERTEX,
     fragmentShader: FIELD_FRAGMENT,
@@ -317,26 +325,28 @@ function init() {
      One camera keyframe per page section:
      camY  camera height above the waves      lookY  where it looks (higher = horizon lower on screen)
      yaw   field rotation                     amp    wave height
-     o     field opacity                      mask   1 dims the left of the screen */
+     o     field opacity                      mask   1 dims the left of the screen
+     roll  camera tilt (radians)              tone   0 mint … 1 violet */
   const sections = ["inicio", "sobre-mi", "experiencia", "proyectos", "skills", "educacion", "contacto"]
     .map(id => document.getElementById(id));
   const GALLERY = 3;
   const KEYS = [
-    { camY: 2.6, lookY:  0.8, yaw: -0.20, amp: 1.0, o: 0.95, mask: 1 },  // hero
-    { camY: 3.6, lookY:  0.0, yaw:  0.22, amp: 1.3, o: 0.42, mask: 0 },  // about
-    { camY: 1.7, lookY:  1.3, yaw: -0.15, amp: 0.8, o: 0.40, mask: 0 },  // experience
-    { camY: 2.2, lookY:  0.9, yaw:  0.00, amp: 1.5, o: 0.62, mask: 0 },  // projects
-    { camY: 4.6, lookY: -1.2, yaw:  0.28, amp: 1.1, o: 0.36, mask: 0 },  // skills
-    { camY: 2.0, lookY:  1.0, yaw: -0.25, amp: 0.9, o: 0.42, mask: 0 },  // education
-    { camY: 2.4, lookY:  0.7, yaw:  0.10, amp: 1.2, o: 0.72, mask: 0 },  // contact
+    { camY: 2.6, lookY:  0.8, yaw: -0.20, amp: 1.0, o: 0.95, mask: 0.6, roll:  0.000, tone: 0.00 },  // hero
+    { camY: 3.9, lookY: -0.2, yaw:  0.24, amp: 1.3, o: 0.42, mask: 0,   roll:  0.040, tone: 0.20 },  // about
+    { camY: 1.6, lookY:  1.3, yaw: -0.16, amp: 0.8, o: 0.40, mask: 0,   roll: -0.035, tone: 0.55 },  // experience
+    { camY: 2.2, lookY:  0.9, yaw:  0.00, amp: 1.5, o: 0.62, mask: 0,   roll:  0.000, tone: 0.10 },  // projects
+    { camY: 4.8, lookY: -1.3, yaw:  0.30, amp: 1.1, o: 0.36, mask: 0,   roll:  0.050, tone: 0.75 },  // skills
+    { camY: 2.0, lookY:  1.0, yaw: -0.26, amp: 0.9, o: 0.42, mask: 0,   roll: -0.040, tone: 0.40 },  // education
+    { camY: 2.4, lookY:  0.7, yaw:  0.10, amp: 1.2, o: 0.72, mask: 0,   roll:  0.000, tone: 0.00 },  // contact
   ];
   const KEY_PROPS = Object.keys(KEYS[0]);
-  const target = { ...KEYS[0], shift: 0 };
+  const target = { ...KEYS[0], shift: 0, fov: 40 };
   const cur    = { ...target };
 
   /* ---- Frame ---- */
   const clock = new THREE.Clock();
   const lookAt = new THREE.Vector3();
+  const horizon = new THREE.Vector3();
   let time = 0;
   let energy = 0;
   let travel = 0;
@@ -377,14 +387,16 @@ function init() {
     const mix  = next === index ? 0 : smoothstep(centre + height * 0.6, centre, nextTop);
     KEY_PROPS.forEach(k => { target[k] = lerp(KEYS[index][k], KEYS[next][k], mix); });
     target.shift = 0;
+    target.fov = 40 + energy * 8;      // the lens widens with scroll speed
     if (!wide) { target.mask = 0; target.o *= 0.75; }
 
     // Pinned hero: the camera dives towards the waves
     if (index === 0) {
       const dive = smoothstep(0, 1, fx.hero) * (1 - mix);
-      target.camY  = lerp(target.camY, 1.15, dive);
-      target.lookY = lerp(target.lookY, 1.0, dive);
-      target.amp  += 0.55 * dive;
+      target.camY  = lerp(target.camY, 0.8, dive);
+      target.lookY = lerp(target.lookY, 0.9, dive);
+      target.amp  += 0.8 * dive;
+      target.fov  += 9 * dive;
       target.mask  = lerp(target.mask, 0, dive);
     }
     // Pinned gallery: the camera pans and the waves drift sideways with the cards
@@ -405,6 +417,7 @@ function init() {
     fieldMat.uniforms.uAmp.value     = cur.amp + energy * 0.45;
     fieldMat.uniforms.uMask.value    = cur.mask;
     fieldMat.uniforms.uOpacity.value = cur.o;
+    fieldMat.uniforms.uColorA.value.copy(MINT).lerp(VIOLET, cur.tone * 0.55);
 
     auroraMat.uniforms.uTime.value  = time;
     auroraMat.uniforms.uPhase.value = travel * 0.55;
@@ -417,6 +430,13 @@ function init() {
     camera.position.set(pointer.sx * 0.35, cur.camY - pointer.sy * 0.15, 6);
     lookAt.set(pointer.sx * 0.2, cur.lookY, -8);
     camera.lookAt(lookAt);
+    camera.rotateZ(cur.roll + pointer.sx * 0.012);
+    camera.fov = cur.fov;
+    camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
+    horizon.set(0, 0, FIELD.farZ * 0.85).project(camera);
+    auroraMat.uniforms.uHorizon.value = horizon.y * 0.5 + 0.5;
+    auroraMat.uniforms.uTone.value = cur.tone;
 
     renderer.render(scene, camera);
 

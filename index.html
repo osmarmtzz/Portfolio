@@ -21,12 +21,14 @@
   <div class="preloader" id="preloader" aria-hidden="true">
     <span class="preloader-mark mono">OM</span>
     <span class="preloader-bar"><i></i></span>
+    <span class="preloader-count mono" id="preloaderCount">0</span>
   </div>
 
   <!-- 3D scene + ambient layers -->
   <canvas id="scene" aria-hidden="true"></canvas>
   <div class="bg-fallback" aria-hidden="true"></div>
   <div class="bg-vignette" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
   <div class="progress" id="progress" aria-hidden="true"></div>
 
@@ -68,29 +70,36 @@
 
     <!-- ===== HERO ===== -->
     <section class="hero" id="inicio">
-      <div class="hero-inner">
-        <div class="hero-content">
-          <div class="eyebrow hero-fade">
-            <span class="pulse-dot"></span>
-            <span data-i18n="hero.eyebrow">Ingeniero de Software Senior · Líder Técnico en Landaii</span>
-          </div>
+      <div class="hero-top">
+        <div class="eyebrow hero-fade">
+          <span class="pulse-dot"></span>
+          <span data-i18n="hero.eyebrow">Ingeniero de Software Senior · Líder Técnico en Landaii</span>
+        </div>
+        <a href="#sobre-mi" class="scroll-hint mono hero-fade" aria-hidden="true" tabindex="-1">
+          <span data-i18n="hero.scroll">Desliza</span>
+          <span class="scroll-line"></span>
+        </a>
+      </div>
 
-          <h1 class="hero-name">
-            <span class="line-mask"><span class="line">Osmar</span></span>
-            <span class="line-mask"><span class="line accent-text">Martínez</span></span>
-          </h1>
+      <h1 class="hero-name" aria-label="Osmar Martínez">
+        <span class="line-mask"><span class="line">Osmar</span></span>
+        <span class="line-mask"><span class="line accent-text">Martínez</span></span>
+      </h1>
 
+      <div class="hero-bottom">
+        <div class="hero-copy">
           <p class="hero-lead hero-fade">
             <span data-i18n="hero.lead">Ingeniero de software full stack. Construyo</span>
             <span class="rotator"><span class="rotator-word" id="rotatorWord">productos SaaS</span></span>
           </p>
-
           <p class="hero-desc hero-fade" data-i18n="hero.desc">
             Me hago cargo del producto completo: arquitectura, backend, interfaz, seguridad, CI/CD y despliegue.
             Especializado en <strong>Next.js</strong>, <strong>TypeScript</strong>, <strong>Supabase</strong> y <strong>agentes de IA</strong>.
           </p>
+        </div>
 
-          <div class="hero-actions hero-fade">
+        <div class="hero-cta hero-fade">
+          <div class="hero-actions">
             <a href="#experiencia" class="btn btn-primary" data-magnetic>
               <span data-i18n="hero.btn.exp">Ver experiencia</span>
               <i class="fa-solid fa-arrow-right"></i>
@@ -99,32 +108,28 @@
               <i class="fa-solid fa-download"></i>
               <span data-i18n="hero.btn.cv">Descargar CV</span>
             </a>
-            <div class="hero-social">
-              <a href="https://github.com/osmarmtzz" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-              <a href="https://www.linkedin.com/in/osmarenriquemtz/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-              <a href="mailto:osmarenriquemtz@outlook.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
-            </div>
+          </div>
+          <div class="hero-social">
+            <a href="https://github.com/osmarmtzz" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/osmarenriquemtz/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="mailto:osmarenriquemtz@outlook.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
           </div>
         </div>
-      </div>
 
-      <div class="hero-stats">
-        <div class="stat">
-          <span class="stat-n"><span data-counter="30">30</span>+</span>
-          <span class="stat-l" data-i18n="stat.apps">Aplicaciones en producción</span>
+        <div class="hero-stats">
+          <div class="stat hero-fade">
+            <span class="stat-n"><span data-counter="30">30</span>+</span>
+            <span class="stat-l" data-i18n="stat.apps">Aplicaciones en producción</span>
+          </div>
+          <div class="stat hero-fade">
+            <span class="stat-n"><span data-counter="14">14</span></span>
+            <span class="stat-l" data-i18n="stat.repos">Repositorios auditados cada semana</span>
+          </div>
+          <div class="stat hero-fade">
+            <span class="stat-n"><span data-counter="2">2</span></span>
+            <span class="stat-l" data-i18n="stat.countries">Países atendidos: México y EE.&nbsp;UU.</span>
+          </div>
         </div>
-        <div class="stat">
-          <span class="stat-n"><span data-counter="14">14</span></span>
-          <span class="stat-l" data-i18n="stat.repos">Repositorios auditados cada semana</span>
-        </div>
-        <div class="stat">
-          <span class="stat-n"><span data-counter="2">2</span></span>
-          <span class="stat-l" data-i18n="stat.countries">Países atendidos: México y EE.&nbsp;UU.</span>
-        </div>
-        <a href="#sobre-mi" class="scroll-hint mono" aria-hidden="true" tabindex="-1">
-          <span data-i18n="hero.scroll">Desliza</span>
-          <span class="scroll-line"></span>
-        </a>
       </div>
     </section>
 
@@ -142,21 +147,24 @@
 
     <!-- ===== ABOUT ===== -->
     <section id="sobre-mi" class="section">
+      <span class="sec-ghost" aria-hidden="true">01</span>
       <div class="container">
-        <div class="sec-head">
-          <span class="sec-idx mono">01</span>
-          <span class="sec-rule"></span>
-          <span class="sec-label mono" data-i18n="about.label">Perfil</span>
+        <div class="about-intro">
+          <div class="sec-head">
+            <span class="sec-idx mono">01</span>
+            <span class="sec-rule"></span>
+            <span class="sec-label mono" data-i18n="about.label">Perfil</span>
+          </div>
+          <h2 class="sec-title" data-i18n="about.title">Un ingeniero,<br/><em>el producto completo.</em></h2>
+          <p class="manifesto" data-i18n="about.p1">
+            Ingeniero de software full stack con enfoque en <strong>productos SaaS</strong>, <strong>agentes de IA</strong> e
+            <strong>infraestructura en la nube</strong>. Me hago cargo de un producto completo: arquitectura, backend,
+            interfaz, seguridad, CI/CD y despliegue.
+          </p>
         </div>
 
         <div class="about-grid">
           <div class="about-main">
-            <h2 class="sec-title" data-i18n="about.title">Un ingeniero,<br/><em>el producto completo.</em></h2>
-            <p class="about-text scrub-text" data-i18n="about.p1">
-              Ingeniero de software full stack con enfoque en <strong>productos SaaS</strong>, <strong>agentes de IA</strong> e
-              <strong>infraestructura en la nube</strong>. Me hago cargo de un producto completo: arquitectura, backend,
-              interfaz, seguridad, CI/CD y despliegue.
-            </p>
             <p class="about-text scrub-text" data-i18n="about.p2">
               Trabajo con un modelo de desarrollo asistido por IA, dirigiendo agentes de código y revisando cada cambio
               antes de producción, lo que me permite entregar rápido sin perder calidad. Aprendo tecnologías nuevas sobre
@@ -211,6 +219,7 @@
 
     <!-- ===== EXPERIENCE ===== -->
     <section id="experiencia" class="section">
+      <span class="sec-ghost" aria-hidden="true">02</span>
       <div class="container">
         <div class="sec-head">
           <span class="sec-idx mono">02</span>
@@ -220,12 +229,10 @@
         <h2 class="sec-title" data-i18n="exp.title">Dónde he <em>construido.</em></h2>
 
         <div class="timeline">
-          <div class="timeline-rail" aria-hidden="true"><span class="timeline-progress"></span></div>
 
           <!-- Landaii -->
           <article class="job">
-            <span class="job-dot is-live" aria-hidden="true"></span>
-            <div class="card job-card">
+            <div class="job-card">
               <header class="job-head">
                 <div>
                   <h3 class="job-role" data-i18n="exp.l.role">Ingeniero de Software Senior · Líder Técnico</h3>
@@ -257,8 +264,7 @@
 
           <!-- Red Doctors -->
           <article class="job">
-            <span class="job-dot" aria-hidden="true"></span>
-            <div class="card job-card">
+            <div class="job-card">
               <header class="job-head">
                 <div>
                   <h3 class="job-role" data-i18n="exp.r.role">Desarrollador Full Stack Jr.</h3>
@@ -287,6 +293,7 @@
 
     <!-- ===== PROJECTS ===== -->
     <section id="proyectos" class="section">
+      <span class="sec-ghost" aria-hidden="true">03</span>
       <div class="container">
         <div class="sec-head">
           <span class="sec-idx mono">03</span>
@@ -393,6 +400,7 @@
 
     <!-- ===== SKILLS ===== -->
     <section id="skills" class="section">
+      <span class="sec-ghost" aria-hidden="true">04</span>
       <div class="container">
         <div class="sec-head">
           <span class="sec-idx mono">04</span>
@@ -440,6 +448,7 @@
 
     <!-- ===== EDUCATION ===== -->
     <section id="educacion" class="section">
+      <span class="sec-ghost" aria-hidden="true">05</span>
       <div class="container">
         <div class="sec-head">
           <span class="sec-idx mono">05</span>
@@ -488,6 +497,7 @@
 
     <!-- ===== CONTACT ===== -->
     <section id="contacto" class="section section-contact">
+      <span class="sec-ghost" aria-hidden="true">06</span>
       <div class="container">
         <div class="sec-head">
           <span class="sec-idx mono">06</span>

@@ -356,6 +356,24 @@
       })();
     }
 
+    // Ring that trails the pointer and grows over anything clickable
+    const ring = document.createElement("div");
+    ring.className = "cursor-ring";
+    ring.setAttribute("aria-hidden", "true");
+    document.body.appendChild(ring);
+    let rx = innerWidth / 2, ry = innerHeight / 2, mx = rx, my = ry;
+    window.addEventListener("pointermove", e => {
+      mx = e.clientX; my = e.clientY;
+      ring.classList.add("on");
+      ring.classList.toggle("is-hover", !!e.target.closest("a, button, input, textarea, [data-tilt]"));
+    }, { passive: true });
+    document.documentElement.addEventListener("pointerleave", () => ring.classList.remove("on"));
+    (function trail() {
+      rx += (mx - rx) * 0.2; ry += (my - ry) * 0.2;
+      ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+      requestAnimationFrame(trail);
+    })();
+
     // 3D tilt. Uses the standalone CSS `rotate` property (axis + angle) so it
     // composes with the transforms GSAP writes for the scroll animations.
     const MAX_TILT = 9;
