@@ -330,6 +330,7 @@ function init() {
   const sections = ["inicio", "sobre-mi", "experiencia", "proyectos", "skills", "educacion", "contacto"]
     .map(id => document.getElementById(id));
   const GALLERY = 3;
+  const cover = sections[1];   // first panel: once it reaches the top, the canvas is hidden behind it
   const KEYS = [
     { camY: 2.6, lookY:  0.8, yaw: -0.20, amp: 1.0, o: 0.95, mask: 0.6, roll:  0.000, tone: 0.00 },  // hero
     { camY: 3.9, lookY: -0.2, yaw:  0.24, amp: 1.3, o: 0.42, mask: 0,   roll:  0.040, tone: 0.20 },  // about
@@ -357,6 +358,7 @@ function init() {
   function frame() {
     if (!running) return;
     requestAnimationFrame(frame);
+    if (!firstFrame && cover && cover.getBoundingClientRect().top <= 0) { clock.getDelta(); return; }
 
     const dt = Math.min(clock.getDelta(), 0.05);
     time += dt * (REDUCED ? 0.15 : 1);

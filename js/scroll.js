@@ -2,7 +2,10 @@
    Scroll-driven animations — GSAP + ScrollTrigger + Lenis
 
    How this file is organised:
-   - CONFIG holds every tunable (scrub smoothing, pin lengths, breakpoints).
+   - CONFIG holds every tunable (scrub smoothing, breakpoints, marquee speed).
+   - Pinned scenes use CSS `position: sticky` (see styles.css): the panels
+     stack over each other, the statement and the project gallery hold the
+     screen. This file only drives what happens while they hold.
    - Each section has its own *Fx function. They are listed in MODULES;
      remove one from that list to switch its animation off.
    - Everything is scrubbed, so it plays forwards and backwards with the
@@ -14,17 +17,16 @@
 
   const CONFIG = {
     smooth:    { duration: 1.2 },
-    scrub:     0.8,                  // seconds of catch-up on desktop; touch devices are locked 1:1
-    hero:      { pinLength: 1.0 },   // extra scroll while a section stays pinned, in viewport heights
-    manifesto: { pinLength: 0.9 },
-    pinQuery:  "(min-width: 901px) and (min-height: 760px)", // pinned scenes + horizontal gallery
+    scrub:     0.8,                 // seconds of catch-up on desktop; touch devices are locked 1:1
+    wideQuery: "(min-width: 901px) and (min-height: 700px)",  // horizontal gallery + receding panels
     marquee:   { baseSpeed: 0.8, boost: 0.5 },
   };
 
   const HAS_GSAP    = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefined";
   const reduceQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const pinQuery    = window.matchMedia(CONFIG.pinQuery);
+  const wideQuery   = window.matchMedia(CONFIG.wideQuery);
   const enabled     = () => HAS_GSAP && !reduceQuery.matches;
+  const root        = document.documentElement;
 
   // Shared with scene.js
   const state = (window.__scrollFx = { hero: 0, gallery: 0 });
@@ -36,7 +38,7 @@
   let restoreY = null;   // scroll position to return to after a rebuild
 
   /* ============================================================
-     SMOOTH SCROLL
+     SMOOTH SCROLL + POSITIONS
   ============================================================ */
   function initSmoothScroll() {
     if (!enabled() || typeof Lenis === "undefined") return;
@@ -49,15 +51,43 @@
     gsap.ticker.lagSmoothing(0);
   }
 
+  // Where an element sits in the document when nothing is stuck. Sticky
+  // panels report a shifted position while they hold, so measure in normal flow.
+  function naturalTop(el) {
+    const measuring = root.classList.contains("is-measuring");
+    root.classList.add("is-measuring");
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    if (!measuring) root.classList.remove("is-measuring");
+    return top;
+  }
+
   function scrollTo(target) {
-    const instant = reduceQuery.matches;
-    if (lenis) lenis.scrollTo(target, { offset: target === 0 ? 0 : -70 });
-    else if (target === 0) window.scrollTo({ top: 0, behavior: instant ? "auto" : "smooth" });
-    else target.scrollIntoView({ behavior: instant ? "auto" : "smooth" });
+    const y = target === 0 ? 0 : Math.max(0, naturalTop(target));
+    if (lenis) lenis.scrollTo(y);
+    else window.scrollTo({ top: y, behavior: reduceQuery.matches ? "auto" : "smooth" });
   }
 
   function lock(locked) {
     if (lenis) locked ? lenis.stop() : lenis.start();
+  }
+
+  // Turns the panels into a sticky stack. A panel taller than the screen gets
+  // a negative offset so it scrolls through before it holds.
+  function enableStack() {
+    if (!enabled()) return;
+    root.classList.add("stack-ready");
+    const panels = [...document.querySelectorAll(".panel")];
+    const measure = () => panels.forEach(panel => {
+      panel.style.setProperty("--stick", `${Math.min(0, window.innerHeight - panel.offsetHeight)}px`);
+    });
+    measure();
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(measure);
+      panels.forEach(panel => observer.observe(panel));
+    }
+    window.addEventListener("resize", measure);
+    ScrollTrigger.addEventListener("refreshInit", () => root.classList.add("is-measuring"));
+    ScrollTrigger.addEventListener("refresh", () => root.classList.remove("is-measuring"));
   }
 
   /* ============================================================
@@ -135,49 +165,56 @@
 
   /* ============================================================
      SECTION MODULES
-     env = { pin: boolean, scrub: number | true }
+     env = { wide: boolean, scrub: number | true }
   ============================================================ */
 
-  // Hero: stays pinned while the camera flies through the name and dives
-  // towards the waves (scene.js follows state.hero).
+  // Hero: it stays behind (sticky) while the camera flies through the name
+  // and dives towards the waves; scene.js follows state.hero.
   function heroFx(env) {
-    const hero = document.querySelector(".hero");
-    if (!hero) return;
+    if (!document.querySelector(".hero-runway")) return;
     const sync = self => { state.hero = self.progress; };
-    const tl = gsap.timeline({
+    gsap.timeline({
       defaults: { ease: "none" },
       scrollTrigger: {
-        trigger: hero,
-        start: "top top",
-        end: env.pin ? () => "+=" + window.innerHeight * CONFIG.hero.pinLength : "bottom top",
-        pin: env.pin, anticipatePin: 1, scrub: env.scrub,
+        trigger: ".hero-runway", start: "top bottom", end: "top top", scrub: env.scrub,
         onUpdate: sync, onRefresh: sync,
       },
-    });
-    tl.to(".hero-bottom", { y: 70,  opacity: 0, duration: 0.3 }, 0)
-      .to(".hero-top",    { y: -40, opacity: 0, duration: 0.3 }, 0);
-    if (env.pin) {
-      tl.to(".hero-name", { scale: 7, duration: 1, ease: "power2.in" }, 0)
-        .to(".hero-name", { opacity: 0, duration: 0.35 }, 0.6);
-    } else {
-      tl.to(".hero-name", { yPercent: -35, opacity: 0, duration: 1 }, 0);
-    }
+    })
+      .to(".hero-bottom", { y: 70,  opacity: 0, duration: 0.3 }, 0)
+      .to(".hero-top",    { y: -40, opacity: 0, duration: 0.3 }, 0)
+      .to(".hero-name",   { scale: env.wide ? 7 : 5, duration: 1, ease: "power2.in" }, 0)
+      .to(".hero-name",   { opacity: 0, duration: 0.35 }, 0.6);
     return () => { state.hero = 0; };
   }
 
+  // Panels: as each one slides over the previous, the one underneath dims
+  // and (on large screens) shrinks back like a sheet being covered.
+  function panelsFx(env) {
+    const panels = gsap.utils.toArray(".panel");
+    panels.forEach((panel, i) => {
+      if (i === 0) return;
+      const recede = {
+        "--dim-level": 0.55, ease: "none",
+        scrollTrigger: { trigger: panel, start: "top bottom", end: "top top", scrub: true },
+      };
+      if (env.wide && i > 1) Object.assign(recede, { scale: 0.93, borderRadius: 30 });
+      gsap.to(panels[i - 1], recede);
+    });
+  }
+
   // About: the statement holds the screen while it lights up word by word,
-  // then the supporting copy and the pillar cards fall into place.
+  // then the cards fan out of a single deck into their row.
   function aboutFx(env) {
-    const intro     = document.querySelector(".about-intro");
+    const statement = document.querySelector(".statement");
     const manifesto = document.querySelector(".manifesto");
-    if (intro && manifesto) {
-      gsap.fromTo(splitWords(manifesto),
-        { opacity: 0.14 },
-        { opacity: 1, ease: "none", stagger: 0.1,
-          scrollTrigger: env.pin
-            ? { trigger: intro, start: "center center", end: () => "+=" + window.innerHeight * CONFIG.manifesto.pinLength,
-                pin: true, anticipatePin: 1, scrub: env.scrub }
-            : { trigger: manifesto, start: "top 84%", end: "bottom 45%", scrub: env.scrub } });
+    if (statement && manifesto) {
+      const words = splitWords(manifesto);
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: { trigger: statement, start: "top top", end: "bottom bottom", scrub: env.scrub },
+      })
+        .fromTo(words, { opacity: 0.12 }, { opacity: 1, stagger: 0.1 })
+        .to({}, { duration: words.length * 0.03 });   // hold the finished statement for a beat
     }
 
     gsap.utils.toArray(".about-text.scrub-text").forEach(el => {
@@ -187,29 +224,48 @@
           scrollTrigger: { trigger: el, start: "top 88%", end: "bottom 55%", scrub: env.scrub } });
     });
 
-    const pillars = gsap.utils.toArray(".pillar");
-    if (!pillars.length) return;
-    gsap.fromTo(pillars,
-      { y: 150, rotateX: -32, rotateZ: i => (i % 2 ? 5 : -5), scale: 0.84, opacity: 0, transformOrigin: "50% 100%" },
-      { y: 0, rotateX: 0, rotateZ: 0, scale: 1, opacity: 1, ease: "none", stagger: 0.2,
-        scrollTrigger: { trigger: ".pillars", start: "top 96%", end: "top 36%", scrub: env.scrub } });
+    const deck = document.querySelector(".pillars");
+    if (!deck) return;
+    const cards  = gsap.utils.toArray(".pillar", deck);
+    const centre = deck.getBoundingClientRect().left + deck.offsetWidth / 2;
+    const mid    = (cards.length - 1) / 2;
+    gsap.fromTo(cards,
+      {
+        x: (i, card) => (centre - (card.getBoundingClientRect().left + card.offsetWidth / 2)) * 0.9,
+        y: 160, rotate: i => (i - mid) * 7, scale: 0.84, opacity: 0, transformOrigin: "50% 100%",
+      },
+      { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, ease: "power1.out", stagger: 0.06,
+        scrollTrigger: { trigger: deck, start: "top 96%", end: "top 38%", scrub: env.scrub } });
   }
 
-  // Projects: on large screens the section pins and the cards travel
-  // sideways, each one swinging into place as it enters. Elsewhere the
-  // cards stay stacked and rise in one by one.
+  // Projects: on large screens the gallery holds the screen and the slides
+  // travel sideways; each mock-up turns to face the camera as it passes and
+  // its badges drift faster than it does. Elsewhere the slides stay stacked.
   function galleryFx(env) {
     const section = document.getElementById("proyectos");
+    const gallery = document.getElementById("gallery");
     const track   = document.getElementById("projTrack");
-    if (!section || !track) return;
+    if (!section || !gallery || !track) return;
     const cards = gsap.utils.toArray(".proj", track);
 
-    if (!env.pin) {
+    if (!env.wide) {
       cards.forEach(card => {
-        gsap.fromTo(card,
-          { y: 90, scale: 0.92, rotateX: -10, opacity: 0, transformOrigin: "50% 100%" },
-          { y: 0, scale: 1, rotateX: 0, opacity: 1, ease: "none",
-            scrollTrigger: { trigger: card, start: "top 97%", end: "top 68%", scrub: env.scrub } });
+        gsap.fromTo(card.querySelector(".mock"),
+          { y: 60, rotateX: 16, scale: 0.86, opacity: 0.2 },
+          { y: 0, rotateX: 0, scale: 1, opacity: 1, ease: "none",
+            scrollTrigger: { trigger: card, start: "top 96%", end: "top 48%", scrub: env.scrub } });
+        card.querySelectorAll(".float").forEach(badge => {
+          const depth = parseFloat(badge.dataset.depth) || 1;
+          gsap.fromTo(badge, { y: 46 * depth }, {
+            y: -46 * depth, ease: "none",
+            scrollTrigger: { trigger: card, start: "top bottom", end: "bottom top", scrub: env.scrub },
+          });
+        });
+        const info = card.querySelector(".proj-info");
+        gsap.fromTo(info, { y: 50, opacity: 0 }, {
+          y: 0, opacity: 1, ease: "none",
+          scrollTrigger: { trigger: info, start: "top 96%", end: "top 72%", scrub: env.scrub },
+        });
       });
       return;
     }
@@ -218,10 +274,16 @@
     const fill  = document.getElementById("projBarFill");
     const count = document.getElementById("projCount");
     const total = String(cards.length).padStart(2, "0");
-    const distance = () => Math.max(0, track.scrollWidth - track.parentElement.clientWidth);
+    const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+    // The gallery is as tall as the sideways trip is long, so one scrolls into the other
+    const size = () => { gallery.style.height = `${window.innerHeight + distance()}px`; };
+    size();
+    ScrollTrigger.addEventListener("refreshInit", size);
+
     // The track leans into the movement and settles when the scroll stops
-    const lean  = gsap.quickTo(track, "skewX", { duration: 0.5, ease: "power3.out" });
-    const rest  = () => lean(0);
+    const lean = gsap.quickTo(track, "skewX", { duration: 0.5, ease: "power3.out" });
+    const rest = () => lean(0);
+    ScrollTrigger.addEventListener("scrollEnd", rest);
     const sync = self => {
       state.gallery = self.progress;
       if (fill)  fill.style.transform = `scaleX(${self.progress.toFixed(4)})`;
@@ -231,25 +293,38 @@
     const slide = gsap.to(track, {
       x: () => -distance(), ease: "none",
       scrollTrigger: {
-        trigger: section, start: "top top", end: () => "+=" + distance(),
-        pin: true, anticipatePin: 1, scrub: env.scrub, invalidateOnRefresh: true,
-        onUpdate: self => { sync(self); lean(gsap.utils.clamp(-4, 4, self.getVelocity() / -400)); },
+        trigger: gallery, start: "top top", end: "bottom bottom", scrub: env.scrub, invalidateOnRefresh: true,
+        onUpdate: self => { sync(self); lean(gsap.utils.clamp(-3, 3, self.getVelocity() / -500)); },
         onRefresh: sync,
       },
     });
-    ScrollTrigger.addEventListener("scrollEnd", rest);
 
-    cards.forEach((card, i) => {
-      if (i === 0) return;
-      gsap.fromTo(card,
-        { rotateY: -32, scale: 0.82, opacity: 0.15, transformOrigin: "0% 50%" },
-        { rotateY: 0, scale: 1, opacity: 1, ease: "none",
-          scrollTrigger: { containerAnimation: slide, trigger: card, start: "left 110%", end: "left 62%", scrub: true } });
+    cards.forEach(card => {
+      const pass = { containerAnimation: slide, trigger: card, start: "left right", end: "right left", scrub: true };
+      gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: pass })
+        .fromTo(card.querySelector(".mock"),
+          { rotateY: -30, rotateX: 9, scale: 0.78, opacity: 0.2 },
+          { rotateY: 0, rotateX: 0, scale: 1, opacity: 1, duration: 0.5 })
+        .to(card.querySelector(".mock"), { rotateY: 22, rotateX: -5, scale: 0.86, opacity: 0.4, duration: 0.5 });
+
+      card.querySelectorAll(".float").forEach(badge => {
+        const depth = parseFloat(badge.dataset.depth) || 1;
+        gsap.fromTo(badge, { x: 120 * depth, y: 26 * depth }, {
+          x: -120 * depth, y: -26 * depth, ease: "none", scrollTrigger: { ...pass },
+        });
+      });
+
+      gsap.fromTo(card.querySelector(".proj-info"), { x: 100, opacity: 0 }, {
+        x: 0, opacity: 1, ease: "none",
+        scrollTrigger: { containerAnimation: slide, trigger: card, start: "left 94%", end: "left 46%", scrub: true },
+      });
     });
 
     return () => {
+      ScrollTrigger.removeEventListener("refreshInit", size);
       ScrollTrigger.removeEventListener("scrollEnd", rest);
       section.classList.remove("is-horizontal");
+      gallery.style.height = "";
       state.gallery = 0;
     };
   }
@@ -275,9 +350,9 @@
     });
 
     gsap.utils.toArray(".sec-ghost").forEach(ghost => {
-      gsap.fromTo(ghost, { yPercent: 40 }, {
-        yPercent: -40, ease: "none",
-        scrollTrigger: { trigger: ghost.parentElement, start: "top bottom", end: "bottom top", scrub: env.scrub },
+      gsap.fromTo(ghost, { yPercent: 45 }, {
+        yPercent: -45, ease: "none",
+        scrollTrigger: { trigger: ghost.parentElement, start: "top bottom", end: "top -60%", scrub: env.scrub },
       });
     });
 
@@ -323,22 +398,14 @@
     });
   }
 
-  // Skills: cards start scattered and fanned out, then assemble into the grid.
+  // Skills: rows slide in from alternating sides.
   function skillsFx(env) {
-    const grid = document.querySelector(".skills-grid");
-    if (!grid) return;
-    const cards = gsap.utils.toArray(".skill", grid);
-    const cols  = getComputedStyle(grid).gridTemplateColumns.split(" ").length || 1;
-    const mid   = (cols - 1) / 2;
-    gsap.fromTo(cards,
-      {
-        x: i => ((i % cols) - mid) * 70,
-        y: i => 170 + Math.floor(i / cols) * 50,
-        rotateZ: i => ((i % cols) - mid) * 7,
-        rotateX: -38, scale: 0.8, opacity: 0, transformOrigin: "50% 100%",
-      },
-      { x: 0, y: 0, rotateZ: 0, rotateX: 0, scale: 1, opacity: 1, ease: "none", stagger: 0.09,
-        scrollTrigger: { trigger: grid, start: "top 96%", end: "top 30%", scrub: env.scrub } });
+    gsap.utils.toArray(".skill").forEach((row, i) => {
+      gsap.fromTo(row, { x: i % 2 ? 90 : -90, opacity: 0 }, {
+        x: 0, opacity: 1, ease: "none",
+        scrollTrigger: { trigger: row, start: "top 98%", end: "top 74%", scrub: env.scrub },
+      });
+    });
   }
 
   // Education: cards swing open like doors.
@@ -359,7 +426,7 @@
         scrollTrigger: { trigger: ".contact-links", start: "clamp(top 96%)", end: "clamp(top 62%)", scrub: env.scrub } });
 
     gsap.fromTo(".contact-form",
-      env.pin
+      env.wide
         ? { x: 120, rotateY: -18, opacity: 0, transformPerspective: 1300, transformOrigin: "100% 50%" }
         : { y: 90, scale: 0.94, opacity: 0 },
       { x: 0, y: 0, rotateY: 0, scale: 1, opacity: 1, ease: "none",
@@ -374,23 +441,7 @@
     });
   }
 
-  // Section hand-offs: outgoing content recedes while the next one arrives.
-  // (About uses its grid, not the container: a transformed ancestor would break the pinned statement.)
-  function transitionsFx(env) {
-    [["#sobre-mi", ".about-grid"], ["#experiencia", ".container"], ["#skills", ".container"], ["#educacion", ".container"]]
-      .forEach(([id, inner]) => {
-        const section = document.querySelector(id);
-        const target  = section && section.querySelector(inner);
-        if (!target) return;
-        gsap.to(target, {
-          scale: 0.95, opacity: 0.15, transformOrigin: "50% 100%", ease: "none",
-          scrollTrigger: { trigger: section, start: "bottom 55%", end: "bottom 6%", scrub: env.scrub },
-        });
-      });
-  }
-
-  // Modules that pin come first and in page order, so everything below them measures correctly.
-  const MODULES = [heroFx, aboutFx, galleryFx, headingsFx, experienceFx, skillsFx, educationFx, contactFx, footerFx, transitionsFx];
+  const MODULES = [heroFx, panelsFx, aboutFx, galleryFx, headingsFx, experienceFx, skillsFx, educationFx, contactFx, footerFx];
 
   /* ============================================================
      BUILD / TEARDOWN
@@ -412,7 +463,8 @@
     const y = restoreY !== null ? restoreY : window.scrollY;
     restoreY = null;
     const touch = ScrollTrigger.isTouch === 1;
-    const env = { pin: pinQuery.matches, scrub: touch ? true : CONFIG.scrub };
+    const env = { wide: wideQuery.matches, scrub: touch ? true : CONFIG.scrub };
+    root.classList.add("is-measuring");
     ctx = gsap.context(() => {
       MODULES.forEach(fx => {
         const cleanup = fx(env);
@@ -420,7 +472,8 @@
       });
     });
     ScrollTrigger.refresh();
-    // teardown removes the pin spacers, which can clamp the scroll position
+    root.classList.remove("is-measuring");
+    // a rebuild changes the page height (gallery), which can move the scroll position
     if (Math.abs(window.scrollY - y) > 2) {
       if (lenis) lenis.scrollTo(y, { immediate: true, force: true });
       else window.scrollTo(0, y);
@@ -508,11 +561,12 @@
       ScrollTrigger.config({ ignoreMobileResize: true });
     }
     initSmoothScroll();
+    enableStack();
     intro();
     marquee();
     build();
-    pinQuery.addEventListener("change", build);
+    wideQuery.addEventListener("change", build);
   }
 
-  window.ScrollFX = { init, build, teardown, scrollTo, lock, CONFIG, get lenis() { return lenis; } };
+  window.ScrollFX = { init, build, teardown, scrollTo, naturalTop, lock, CONFIG, get lenis() { return lenis; } };
 })();

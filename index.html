@@ -69,7 +69,7 @@
   <main id="main">
 
     <!-- ===== HERO ===== -->
-    <section class="hero" id="inicio">
+    <section class="hero panel" id="inicio">
       <div class="hero-top">
         <div class="eyebrow hero-fade">
           <span class="pulse-dot"></span>
@@ -127,28 +127,31 @@
           </div>
           <div class="stat hero-fade">
             <span class="stat-n"><span data-counter="2">2</span></span>
-            <span class="stat-l" data-i18n="stat.countries">Países atendidos: México y EE.&nbsp;UU.</span>
+            <span class="stat-l" data-i18n="stat.certs">Certificaciones AWS Academy</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== MARQUEE ===== -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <div class="marquee-group">
-          <span>Next.js</span><i></i><span>React</span><i></i><span>TypeScript</span><i></i><span>Supabase</span><i></i><span>PostgreSQL</span><i></i><span>pgvector</span><i></i><span>Anthropic Claude</span><i></i><span>OpenAI</span><i></i><span>RAG</span><i></i><span>Vercel</span><i></i><span>GitHub Actions</span><i></i><span>Inngest</span><i></i><span>Sentry</span><i></i><span>React Native</span><i></i><span>Node.js</span><i></i>
-        </div>
-        <div class="marquee-group">
-          <span>Next.js</span><i></i><span>React</span><i></i><span>TypeScript</span><i></i><span>Supabase</span><i></i><span>PostgreSQL</span><i></i><span>pgvector</span><i></i><span>Anthropic Claude</span><i></i><span>OpenAI</span><i></i><span>RAG</span><i></i><span>Vercel</span><i></i><span>GitHub Actions</span><i></i><span>Inngest</span><i></i><span>Sentry</span><i></i><span>React Native</span><i></i><span>Node.js</span><i></i>
-        </div>
-      </div>
-    </div>
+    <!-- Scroll runway: the hero stays behind while its name zooms past -->
+    <div class="hero-runway" aria-hidden="true"></div>
 
     <!-- ===== ABOUT ===== -->
-    <section id="sobre-mi" class="section">
+    <section id="sobre-mi" class="section panel theme-emerald">
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <div class="marquee-group">
+            <span>Next.js</span><i></i><span>React</span><i></i><span>TypeScript</span><i></i><span>Supabase</span><i></i><span>PostgreSQL</span><i></i><span>pgvector</span><i></i><span>Anthropic Claude</span><i></i><span>OpenAI</span><i></i><span>RAG</span><i></i><span>Vercel</span><i></i><span>GitHub Actions</span><i></i><span>Inngest</span><i></i><span>Sentry</span><i></i><span>React Native</span><i></i><span>Node.js</span><i></i>
+          </div>
+          <div class="marquee-group">
+            <span>Next.js</span><i></i><span>React</span><i></i><span>TypeScript</span><i></i><span>Supabase</span><i></i><span>PostgreSQL</span><i></i><span>pgvector</span><i></i><span>Anthropic Claude</span><i></i><span>OpenAI</span><i></i><span>RAG</span><i></i><span>Vercel</span><i></i><span>GitHub Actions</span><i></i><span>Inngest</span><i></i><span>Sentry</span><i></i><span>React Native</span><i></i><span>Node.js</span><i></i>
+          </div>
+        </div>
+      </div>
       <span class="sec-ghost" aria-hidden="true">01</span>
-      <div class="container">
+      <div class="statement">
+        <div class="statement-sticky">
+          <div class="container">
         <div class="about-intro">
           <div class="sec-head">
             <span class="sec-idx mono">01</span>
@@ -162,7 +165,11 @@
             interfaz, seguridad, CI/CD y despliegue.
           </p>
         </div>
+          </div>
+        </div>
+      </div>
 
+      <div class="container">
         <div class="about-grid">
           <div class="about-main">
             <p class="about-text scrub-text" data-i18n="about.p2">
@@ -194,23 +201,23 @@
           <div class="pillars">
             <article class="card pillar" data-tilt>
               <span class="card-ico"><i class="fa-solid fa-layer-group"></i></span>
-              <h3 data-i18n="pillar1.t">Producto de punta a punta</h3>
-              <p data-i18n="pillar1.d">Arquitectura, backend, interfaz, seguridad, CI/CD y despliegue bajo una sola responsabilidad.</p>
+              <h3 data-i18n="pillar1.t">Producto completo</h3>
+              <p data-i18n="pillar1.d">Me hago cargo del producto completo: arquitectura, backend, interfaz, seguridad, CI/CD y despliegue.</p>
             </article>
             <article class="card pillar" data-tilt>
               <span class="card-ico"><i class="fa-solid fa-robot"></i></span>
               <h3 data-i18n="pillar2.t">Desarrollo asistido por IA</h3>
-              <p data-i18n="pillar2.d">Dirijo agentes de código y reviso cada cambio antes de producción: velocidad sin perder calidad.</p>
+              <p data-i18n="pillar2.d">Dirijo agentes de código y reviso cada cambio antes de producción: entrego rápido sin perder calidad.</p>
             </article>
             <article class="card pillar" data-tilt>
               <span class="card-ico"><i class="fa-solid fa-bolt"></i></span>
               <h3 data-i18n="pillar3.t">Autonomía</h3>
-              <p data-i18n="pillar3.d">Aprendo tecnologías nuevas sobre la marcha y saco adelante el trabajo sin supervisión constante.</p>
+              <p data-i18n="pillar3.d">Aprendo tecnologías nuevas sobre la marcha y trabajo con autonomía.</p>
             </article>
             <article class="card pillar" data-tilt>
               <span class="card-ico"><i class="fa-solid fa-comments"></i></span>
               <h3 data-i18n="pillar4.t">Lenguaje de negocio</h3>
-              <p data-i18n="pillar4.d">Explico las decisiones técnicas en términos que el negocio entiende y puede evaluar.</p>
+              <p data-i18n="pillar4.d">Explico las decisiones técnicas en términos de negocio.</p>
             </article>
           </div>
         </div>
@@ -218,7 +225,7 @@
     </section>
 
     <!-- ===== EXPERIENCE ===== -->
-    <section id="experiencia" class="section">
+    <section id="experiencia" class="section panel theme-dark">
       <span class="sec-ghost" aria-hidden="true">02</span>
       <div class="container">
         <div class="sec-head">
@@ -256,9 +263,6 @@
                 <li data-i18n="exp.l.b6">Detecté y corregí <strong>vulnerabilidades críticas</strong> que permitían tomar cuentas de usuario en una aplicación financiera, y centralicé el control de las credenciales de IA de la empresa con avisos automáticos de renovación.</li>
                 <li data-i18n="exp.l.b7">Definí el <strong>flujo de trabajo del equipo</strong> (ramas, revisión de código, despliegues y cambios en base de datos) y lo documenté para que los agentes de IA lo apliquen de forma automática.</li>
               </ul>
-              <div class="chips">
-                <span>Next.js</span><span>TypeScript</span><span>Supabase</span><span>PostgreSQL</span><span>Claude · OpenAI</span><span>GitHub Actions</span><span>Vercel</span>
-              </div>
             </div>
           </article>
 
@@ -292,7 +296,7 @@
     </section>
 
     <!-- ===== PROJECTS ===== -->
-    <section id="proyectos" class="section">
+    <section id="proyectos" class="section panel theme-ink">
       <span class="sec-ghost" aria-hidden="true">03</span>
       <div class="container">
         <div class="sec-head">
@@ -301,11 +305,14 @@
           <span class="sec-label mono" data-i18n="proj.label">Trabajo destacado</span>
         </div>
         <h2 class="sec-title" data-i18n="proj.title">Lo que he <em>entregado.</em></h2>
-        <p class="sec-sub reveal" data-i18n="proj.sub">Productos y sistemas en producción para clientes reales. El código es privado; el impacto, no.</p>
+        <p class="sec-sub reveal" data-i18n="proj.sub">Productos y sistemas que construí y que están en producción.</p>
+      </div>
 
-        <div class="proj-viewport">
+      <div class="gallery" id="gallery">
+        <div class="gallery-sticky">
         <div class="bento" id="projTrack">
-          <article class="card proj proj-wide" data-tilt>
+          <article class="proj proj-wide">
+            <div class="proj-info">
             <div class="proj-top">
               <span class="card-ico"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
               <span class="proj-org mono">Landaii · 2026</span>
@@ -322,11 +329,26 @@
               <span class="flow-node" data-i18n="flow.4">Sitio web / app</span>
             </div>
             <div class="chips">
-              <span>Multi-tenant</span><span>RAG</span><span>Embeddings</span><span data-i18n="chip.fallback">Respaldo entre proveedores</span><span data-i18n="chip.cost">Control de costos</span>
+              <span>Multi-tenant</span><span data-i18n="chip.search">Búsqueda semántica</span><span data-i18n="chip.fallback">Respaldo entre proveedores de IA</span><span data-i18n="chip.cost">Control de costo por asistente</span>
+            </div>
+            </div>
+            <div class="proj-visual">
+            <div class="mock" aria-hidden="true">
+              <div class="mock-chrome"><i></i><i></i><i></i></div>
+              <div class="mock-body">
+                <div class="bubble"><span class="sk w-70"></span><span class="sk w-40"></span></div>
+                <div class="bubble out"><span class="sk hi w-90"></span><span class="sk w-60"></span><span class="sk w-30"></span></div>
+                <div class="bubble"><span class="sk w-50"></span></div>
+                <div class="mock-input"><span class="sk w-40"></span><i class="fa-solid fa-arrow-up"></i></div>
+              </div>
+              <span class="float float-a" data-depth="1.5"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+              <span class="float float-b" data-depth="0.8"><i class="fa-solid fa-magnifying-glass"></i></span>
+            </div>
             </div>
           </article>
 
-          <article class="card proj" data-tilt>
+          <article class="proj">
+            <div class="proj-info">
             <div class="proj-top">
               <span class="card-ico"><i class="fa-solid fa-plug"></i></span>
               <span class="proj-org mono">Landaii · 2026</span>
@@ -334,11 +356,29 @@
             <h3 data-i18n="proj2.t">Asistentes con datos en vivo</h3>
             <p data-i18n="proj2.d">Integración de los asistentes con las aplicaciones de varios clientes: responden con datos reales y actualizados del usuario que pregunta —su reservación, sus solicitudes— mediante conexiones seguras.</p>
             <div class="chips">
-              <span data-i18n="chip.tools">Agentes con herramientas</span><span data-i18n="chip.secure">Conexiones seguras</span>
+              <span data-i18n="chip.live">Datos reales y actualizados</span><span data-i18n="chip.secure">Conexiones seguras</span>
+            </div>
+            </div>
+            <div class="proj-visual">
+            <div class="mock" aria-hidden="true">
+              <div class="mock-chrome"><i></i><i></i><i></i></div>
+              <div class="mock-body">
+                <div class="bubble"><span class="sk w-60"></span></div>
+                <div class="mock-record">
+                  <div class="kv"><span class="sk w-30"></span><span class="sk hi w-40"></span></div>
+                  <div class="kv"><span class="sk w-20"></span><span class="sk w-50"></span></div>
+                  <div class="kv"><span class="sk w-40"></span><span class="sk w-30"></span></div>
+                </div>
+                <div class="bubble out"><span class="sk w-70"></span><span class="sk w-40"></span></div>
+              </div>
+              <span class="float float-a" data-depth="1.5"><i class="fa-solid fa-plug"></i></span>
+              <span class="float float-b" data-depth="0.8"><i class="fa-solid fa-database"></i></span>
+            </div>
             </div>
           </article>
 
-          <article class="card proj" data-tilt>
+          <article class="proj">
+            <div class="proj-info">
             <div class="proj-top">
               <span class="card-ico"><i class="fa-solid fa-list-check"></i></span>
               <span class="proj-org mono">Landaii · 2026</span>
@@ -346,11 +386,25 @@
             <h3 data-i18n="proj3.t">Módulo de tareas y proyectos</h3>
             <p data-i18n="proj3.d">Gestión de tareas que se integra dentro de otras aplicaciones sin que el usuario vuelva a iniciar sesión, con asignación, aprobación y notificaciones.</p>
             <div class="chips">
-              <span data-i18n="chip.embed">Integrable</span><span data-i18n="chip.sso">Sesión compartida</span><span data-i18n="chip.notif">Notificaciones</span>
+              <span data-i18n="chip.sso">Sin volver a iniciar sesión</span><span data-i18n="chip.assign">Asignación</span><span data-i18n="chip.approve">Aprobación</span><span data-i18n="chip.notif">Notificaciones</span>
+            </div>
+            </div>
+            <div class="proj-visual">
+            <div class="mock" aria-hidden="true">
+              <div class="mock-chrome"><i></i><i></i><i></i></div>
+              <div class="mock-body mock-board">
+                <div class="col"><span class="sk w-50"></span><div class="task"><span class="sk w-90"></span><span class="sk w-50"></span></div><div class="task"><span class="sk w-70"></span></div></div>
+                <div class="col"><span class="sk w-40"></span><div class="task"><span class="sk w-60"></span><span class="sk w-90"></span></div></div>
+                <div class="col"><span class="sk w-60"></span><div class="task done"><span class="sk hi w-70"></span><span class="sk w-40"></span></div><div class="task done"><span class="sk hi w-50"></span></div></div>
+              </div>
+              <span class="float float-a" data-depth="1.5"><i class="fa-solid fa-list-check"></i></span>
+              <span class="float float-b" data-depth="0.8"><i class="fa-solid fa-bell"></i></span>
+            </div>
             </div>
           </article>
 
-          <article class="card proj" data-tilt>
+          <article class="proj">
+            <div class="proj-info">
             <div class="proj-top">
               <span class="card-ico"><i class="fa-solid fa-shield-halved"></i></span>
               <span class="proj-org mono">Landaii · 2026</span>
@@ -358,11 +412,27 @@
             <h3 data-i18n="proj4.t">Seguridad y entregas automatizadas</h3>
             <p data-i18n="proj4.d">Auditoría semanal de 14 repositorios que detecta y corrige vulnerabilidades sola, más controles para que ningún cambio llegue a producción sin pruebas y revisión.</p>
             <div class="chips">
-              <span>GitHub Actions</span><span data-i18n="chip.workflows">Workflows reutilizables</span><span>CI/CD</span>
+              <span data-i18n="chip.weekly">Auditoría semanal</span><span data-i18n="chip.repos">14 repositorios</span><span data-i18n="chip.tests">Pruebas y revisión</span>
+            </div>
+            </div>
+            <div class="proj-visual">
+            <div class="mock" aria-hidden="true">
+              <div class="mock-chrome"><i></i><i></i><i></i></div>
+              <div class="mock-body">
+                <div class="audit-top"><span class="audit-n">14</span><span class="sk w-30"></span></div>
+                <div class="audit-row"><span class="tick"></span><span class="sk w-60"></span><span class="sk hi w-20"></span></div>
+                <div class="audit-row"><span class="tick"></span><span class="sk w-50"></span><span class="sk hi w-20"></span></div>
+                <div class="audit-row"><span class="tick"></span><span class="sk w-70"></span><span class="sk hi w-20"></span></div>
+                <div class="audit-row"><span class="tick"></span><span class="sk w-40"></span><span class="sk hi w-20"></span></div>
+              </div>
+              <span class="float float-a" data-depth="1.5"><i class="fa-solid fa-shield-halved"></i></span>
+              <span class="float float-b" data-depth="0.8"><i class="fa-solid fa-code-branch"></i></span>
+            </div>
             </div>
           </article>
 
-          <article class="card proj" data-tilt>
+          <article class="proj">
+            <div class="proj-info">
             <div class="proj-top">
               <span class="card-ico"><i class="fa-solid fa-user-lock"></i></span>
               <span class="proj-org mono">Landaii · 2026</span>
@@ -370,11 +440,24 @@
             <h3 data-i18n="proj5.t">Blindaje de una app financiera</h3>
             <p data-i18n="proj5.d">Detección y corrección de vulnerabilidades críticas que permitían tomar cuentas de usuario, y control centralizado de las credenciales de IA con avisos automáticos de renovación.</p>
             <div class="chips">
-              <span data-i18n="chip.audit">Auditoría de código</span><span data-i18n="chip.creds">Gestión de credenciales</span>
+              <span data-i18n="chip.vulns">Vulnerabilidades críticas</span><span data-i18n="chip.creds">Credenciales de IA</span><span data-i18n="chip.renew">Avisos de renovación</span>
+            </div>
+            </div>
+            <div class="proj-visual">
+            <div class="mock" aria-hidden="true">
+              <div class="mock-chrome"><i></i><i></i><i></i></div>
+              <div class="mock-body mock-vault">
+                <span class="vault-ring"><i class="fa-solid fa-lock"></i></span>
+                <div class="vault-rows"><span class="sk struck w-70"></span><span class="sk struck w-50"></span><span class="sk hi w-60"></span></div>
+              </div>
+              <span class="float float-a" data-depth="1.5"><i class="fa-solid fa-user-lock"></i></span>
+              <span class="float float-b" data-depth="0.8"><i class="fa-solid fa-key"></i></span>
+            </div>
             </div>
           </article>
 
-          <article class="card proj proj-full">
+          <article class="proj proj-full">
+            <div class="proj-info">
             <div class="proj-full-main">
               <div class="proj-top">
                 <span class="card-ico"><i class="fa-solid fa-heart-pulse"></i></span>
@@ -386,8 +469,19 @@
             <div class="chips">
               <span>PHP (MVC)</span><span>MySQL</span><span>APIs REST</span><span>React Native</span><span>WebRTC</span>
             </div>
+            </div>
+            <div class="proj-visual">
+            <div class="mock" aria-hidden="true">
+              <div class="mock-chrome"><i></i><i></i><i></i></div>
+              <div class="mock-body mock-call">
+                <div class="tile"><span class="avatar"></span></div>
+                <div class="record"><span class="sk hi w-60"></span><span class="sk w-90"></span><span class="sk w-70"></span><span class="sk w-90"></span><span class="sk w-40"></span></div>
+              </div>
+              <span class="float float-a" data-depth="1.5"><i class="fa-solid fa-heart-pulse"></i></span>
+              <span class="float float-b" data-depth="0.8"><i class="fa-solid fa-video"></i></span>
+            </div>
+            </div>
           </article>
-        </div>
         </div>
 
         <div class="proj-progress" aria-hidden="true">
@@ -395,10 +489,12 @@
           <span class="proj-bar"><i id="projBarFill"></i></span>
           <span class="proj-hint mono" data-i18n="proj.hint">Sigue deslizando</span>
         </div>
+        </div>
       </div>
     </section>
 
-    <!-- ===== SKILLS ===== -->
+    <!-- ===== SKILLS + EDUCATION (one panel) ===== -->
+    <div class="panel theme-indigo">
     <section id="skills" class="section">
       <span class="sec-ghost" aria-hidden="true">04</span>
       <div class="container">
@@ -410,35 +506,35 @@
         <h2 class="sec-title" data-i18n="skills.title">Stack y <em>herramientas.</em></h2>
 
         <div class="skills-grid">
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-window-maximize"></i></span><h3>Frontend</h3></header>
             <div class="chips"><span>Next.js</span><span>React</span><span>TypeScript</span><span>Tailwind CSS</span><span>shadcn/ui</span><span>React Native</span></div>
           </article>
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-server"></i></span><h3>Backend</h3></header>
             <div class="chips"><span>Node.js</span><span>Server Actions</span><span>API Routes</span><span>APIs REST</span><span>Webhooks</span><span>PHP / Laravel</span></div>
           </article>
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-database"></i></span><h3 data-i18n="sk.db">Bases de datos</h3></header>
             <div class="chips"><span>PostgreSQL</span><span>Supabase</span><span>RLS</span><span>pgvector</span><span>MySQL</span></div>
           </article>
-          <article class="card skill skill-hi" data-tilt>
+          <article class="skill skill-hi">
             <header><span class="card-ico"><i class="fa-solid fa-brain"></i></span><h3 data-i18n="sk.ai">Inteligencia artificial</h3></header>
             <div class="chips"><span>Anthropic Claude</span><span>OpenAI</span><span>Embeddings</span><span>RAG</span><span data-i18n="chip.tools">Agentes con herramientas</span><span>Claude Code</span><span>Prompt engineering</span></div>
           </article>
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-cloud"></i></span><h3 data-i18n="sk.infra">Infraestructura y servicios</h3></header>
             <div class="chips"><span>Vercel</span><span>Supabase</span><span>Inngest</span><span>Resend</span><span>Doppler</span><span>Upstash Redis</span><span>Sentry</span><span>Cloudinary</span><span data-i18n="chip.aws">AWS (fundamentos)</span></div>
           </article>
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-code-branch"></i></span><h3 data-i18n="sk.cicd">CI/CD y seguridad</h3></header>
             <div class="chips"><span>GitHub Actions</span><span data-i18n="chip.workflows">Workflows reutilizables</span><span data-i18n="chip.audit">Auditoría de código</span><span data-i18n="chip.hmac">HMAC y tokens firmados</span><span>OAuth</span></div>
           </article>
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-puzzle-piece"></i></span><h3 data-i18n="sk.integ">Integraciones</h3></header>
             <div class="chips"><span>Slack API</span><span>Linear API</span><span>Google OAuth</span><span>Web Push / PWA</span><span>MCP</span><span>WebRTC</span></div>
           </article>
-          <article class="card skill" data-tilt>
+          <article class="skill">
             <header><span class="card-ico"><i class="fa-solid fa-screwdriver-wrench"></i></span><h3 data-i18n="sk.tools">Herramientas</h3></header>
             <div class="chips"><span>Git</span><span>GitHub</span><span>Linear</span><span>Slack</span><span>Linux</span><span>Postman</span><span>pnpm</span></div>
           </article>
@@ -495,8 +591,10 @@
       </div>
     </section>
 
+    </div>
+
     <!-- ===== CONTACT ===== -->
-    <section id="contacto" class="section section-contact">
+    <section id="contacto" class="section section-contact panel theme-dark">
       <span class="sec-ghost" aria-hidden="true">06</span>
       <div class="container">
         <div class="sec-head">
@@ -508,7 +606,7 @@
         <div class="contact-grid">
           <div class="contact-left">
             <h2 class="sec-title contact-title" data-i18n="contact.title">¿Construimos<br/><em>algo juntos?</em></h2>
-            <p class="contact-sub reveal" data-i18n="contact.sub">¿Tienes un proyecto, una vacante o una idea? Escríbeme y te respondo pronto.</p>
+            <p class="contact-sub reveal" data-i18n="contact.sub">¿Tienes un proyecto, una vacante o una idea? Escríbeme.</p>
 
             <div class="contact-links">
               <a href="mailto:osmarenriquemtz@outlook.com" class="contact-row">
@@ -528,7 +626,7 @@
               </a>
               <div class="contact-row is-static">
                 <span class="contact-ico"><i class="fa-solid fa-location-dot"></i></span>
-                <span class="contact-val" data-i18n="contact.location">Lagos de Moreno, Jalisco, México · Remoto</span>
+                <span class="contact-val" data-i18n="contact.location">Lagos de Moreno, Jalisco, México</span>
               </div>
             </div>
           </div>

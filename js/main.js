@@ -45,7 +45,7 @@
       "hero.scroll":  "Scroll",
       "stat.apps":      "Applications in production",
       "stat.repos":     "Repositories audited every week",
-      "stat.countries": "Countries served: Mexico and the U.S.",
+      "stat.certs":     "AWS Academy certifications",
 
       /* about */
       "about.label": "Profile",
@@ -60,14 +60,14 @@
       "fact.lang.v":     "Spanish (native) · English (B2)",
       "fact.edu.k":      "Education",
       "fact.edu.v":      "B.Eng. Computer Systems Engineering, UAA",
-      "pillar1.t": "End-to-end product",
-      "pillar1.d": "Architecture, backend, interface, security, CI/CD and deployment under a single owner.",
+      "pillar1.t": "Complete product",
+      "pillar1.d": "I take ownership of the complete product: architecture, backend, interface, security, CI/CD and deployment.",
       "pillar2.t": "AI-assisted development",
-      "pillar2.d": "I direct coding agents and review every change before production: speed without losing quality.",
+      "pillar2.d": "I direct coding agents and review every change before production: I ship fast without losing quality.",
       "pillar3.t": "Autonomy",
-      "pillar3.d": "I learn new technologies on the go and get the work done without constant supervision.",
+      "pillar3.d": "I learn new technologies on the go and work autonomously.",
       "pillar4.t": "Business language",
-      "pillar4.d": "I explain technical decisions in terms the business understands and can evaluate.",
+      "pillar4.d": "I explain technical decisions in business terms.",
 
       /* experience */
       "exp.label":   "Experience",
@@ -97,7 +97,7 @@
       /* projects */
       "proj.label": "Selected work",
       "proj.title": 'What I\'ve <em>shipped.</em>',
-      "proj.sub":   "Products and systems in production for real clients. The code is private; the impact isn't.",
+      "proj.sub":   "Products and systems I built that are running in production.",
       "proj.hint":  "Keep scrolling",
       "proj1.t": "AI assistant SaaS platform",
       "proj1.d": "Multi-tenant platform where each company creates its own assistant, loads its information and installs it on its website or app in minutes. It answers with semantic search, automatically switches AI provider if one fails, and controls cost per assistant.",
@@ -115,16 +115,24 @@
       "proj5.d": "Detection and remediation of critical vulnerabilities that allowed user account takeover, and centralized control of AI credentials with automatic renewal alerts.",
       "proj6.t": "Medical management system",
       "proj6.d": "Web and mobile system in production, used daily by doctors and patients: digital clinical record, mobile app and real-time doctor–patient video calls.",
-      "chip.fallback":  "Provider fallback",
-      "chip.cost":      "Cost control",
+      "chip.fallback":  "AI provider fallback",
+      "chip.cost":      "Cost control per assistant",
       "chip.tools":     "Tool-using agents",
       "chip.secure":    "Secure connections",
-      "chip.embed":     "Embeddable",
-      "chip.sso":       "Shared session",
+      "chip.sso":       "No second sign-in",
+      "chip.search":    "Semantic search",
+      "chip.live":      "Real, up-to-date data",
+      "chip.assign":    "Assignment",
+      "chip.approve":   "Approval",
+      "chip.weekly":    "Weekly audit",
+      "chip.repos":     "14 repositories",
+      "chip.tests":     "Tests and review",
+      "chip.vulns":     "Critical vulnerabilities",
+      "chip.renew":     "Renewal alerts",
       "chip.notif":     "Notifications",
       "chip.workflows": "Reusable workflows",
       "chip.audit":     "Code auditing",
-      "chip.creds":     "Credential management",
+      "chip.creds":     "AI credentials",
       "chip.aws":       "AWS (fundamentals)",
       "chip.hmac":      "HMAC & signed tokens",
 
@@ -152,8 +160,8 @@
       /* contact */
       "contact.label":    "Contact",
       "contact.title":    'Shall we build<br/><em>something together?</em>',
-      "contact.sub":      "Have a project, an open role or an idea? Write to me and I'll get back to you soon.",
-      "contact.location": "Lagos de Moreno, Jalisco, Mexico · Remote",
+      "contact.sub":      "Have a project, an open role or an idea? Write to me.",
+      "contact.location": "Lagos de Moreno, Jalisco, Mexico",
       "form.name":     "Name",
       "form.name.ph":  "Your name",
       "form.email":    "Email",
@@ -313,15 +321,25 @@
       });
     });
 
-    // Active link
-    const navLinks = document.querySelectorAll(".nav-links a[href^='#']");
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + entry.target.id));
-      });
-    }, { rootMargin: "-45% 0px -50% 0px" });
-    document.querySelectorAll("main section[id]").forEach(s => obs.observe(s));
+    // Active link. Stacked panels stay on screen after they are covered, so an
+    // IntersectionObserver cannot tell which section is current; compare the
+    // scroll position against each section's natural top instead.
+    const navLinks = [...document.querySelectorAll(".nav-links a[href^='#']")];
+    const sections = navLinks.map(l => document.querySelector(l.getAttribute("href"))).filter(Boolean);
+    let tops = [];
+    const measure = () => {
+      tops = sections.map(s => (FX ? FX.naturalTop(s) : s.getBoundingClientRect().top + window.scrollY));
+    };
+    const mark = () => {
+      const line = window.scrollY + window.innerHeight * 0.5;
+      let current = null;
+      sections.forEach((s, i) => { if (tops[i] <= line) current = s.id; });
+      navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + current));
+    };
+    measure(); mark();
+    window.addEventListener("scroll", mark, { passive: true });
+    window.addEventListener("resize", () => { measure(); mark(); });
+    window.addEventListener("load", () => { measure(); mark(); });
   }
 
   /* ============================================================
