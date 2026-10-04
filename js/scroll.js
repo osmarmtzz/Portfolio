@@ -150,7 +150,7 @@
     document.querySelectorAll(".hero-name .line").forEach(line => {
       const letters = [...line.textContent];
       const accent  = line.classList.contains("accent-text");
-      const colour  = gsap.utils.interpolate("#4fe3b5", "#6ea8ff");
+      const colour  = gsap.utils.interpolate("#f5b942", "#ff7a3d");
       line.textContent = "";
       letters.forEach((letter, i) => {
         const span = document.createElement("span");

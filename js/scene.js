@@ -4,9 +4,9 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js";
 
 const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const MINT   = new THREE.Color("#4fe3b5");
-const BLUE   = new THREE.Color("#6ea8ff");
-const VIOLET = new THREE.Color("#8b7bff");
+const AMBER  = new THREE.Color("#f5b942");
+const ORANGE = new THREE.Color("#ff7a3d");
+const ROSE   = new THREE.Color("#ff4d6d");
 
 const FIELD = { halfX: 20, nearZ: 2, farZ: -24 };
 
@@ -130,10 +130,10 @@ uniform float uPhase;       // advances with the scroll, so the lights move betw
 uniform float uAspect;
 uniform float uIntensity;
 uniform float uHorizon;     // screen height (0-1) of the wave field's horizon
-uniform float uTone;        // 0 = mint, 1 = violet: shifts the mood between sections
-uniform vec3 uMint;
-uniform vec3 uBlue;
-uniform vec3 uViolet;
+uniform float uTone;        // 0 = amber, 1 = rose: shifts the mood between sections
+uniform vec3 uAmber;
+uniform vec3 uOrange;
+uniform vec3 uRose;
 varying vec2 vUv;
 ${NOISE_GLSL}
 vec3 light(vec2 uv, vec2 centre, float radius, vec3 colour){
@@ -144,15 +144,15 @@ float hash(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453
 void main(){
   float t = uTime * 0.05;
   vec2 uv = vUv + snoise(vec3(vUv * 1.3, t)) * 0.07;
-  vec3 warm = mix(uMint, uViolet, uTone);
+  vec3 warm = mix(uAmber, uRose, uTone);
   vec3 c = vec3(0.0);
   c += light(uv, vec2(0.74 + 0.12 * sin(uPhase * 1.3 + t), 0.50 + 0.12 * cos(uPhase * 0.9)), 0.44, warm) * 0.17;
-  c += light(uv, vec2(0.30 + 0.26 * sin(uPhase * 0.8 + 2.0), 0.32 + 0.14 * sin(uPhase * 1.1 + t * 1.3)), 0.52, uBlue) * 0.14;
-  c += light(uv, vec2(0.55 + 0.30 * cos(uPhase * 0.6 + 4.0), 0.88), 0.40, uViolet) * 0.09;
+  c += light(uv, vec2(0.30 + 0.26 * sin(uPhase * 0.8 + 2.0), 0.32 + 0.14 * sin(uPhase * 1.1 + t * 1.3)), 0.52, uOrange) * 0.14;
+  c += light(uv, vec2(0.55 + 0.30 * cos(uPhase * 0.6 + 4.0), 0.88), 0.40, uRose) * 0.09;
   // light resting on the horizon, sweeping sideways as the page scrolls
   float band  = exp(-pow((vUv.y - uHorizon) / 0.075, 2.0));
   float sweep = 0.55 + 0.45 * snoise(vec3(vUv.x * 1.6 + uPhase * 0.4, t * 2.0, 3.0));
-  c += mix(warm, uBlue, vUv.x) * band * sweep * 0.17;
+  c += mix(warm, uOrange, vUv.x) * band * sweep * 0.17;
   c *= (0.8 + 0.2 * snoise(vec3(vUv * 2.4, t * 1.5))) * uIntensity;
   c += (hash(gl_FragCoord.xy) - 0.5) / 255.0;          // dither: hides banding in the dark gradients
   float a = clamp(max(c.r, max(c.g, c.b)), 0.0, 1.0);
@@ -208,7 +208,7 @@ function init() {
     uniforms: {
       uTime: { value: 0 }, uPhase: { value: 0 }, uAspect: { value: 1 }, uIntensity: { value: 1 },
       uHorizon: { value: 0.5 }, uTone: { value: 0 },
-      uMint: { value: MINT }, uBlue: { value: BLUE }, uViolet: { value: VIOLET },
+      uAmber: { value: AMBER }, uOrange: { value: ORANGE }, uRose: { value: ROSE },
     },
     vertexShader: AURORA_VERTEX,
     fragmentShader: AURORA_FRAGMENT,
@@ -237,7 +237,7 @@ function init() {
     uniforms: {
       uTime: { value: 0 }, uTravel: { value: 0 }, uShift: { value: 0 }, uAmp: { value: 1 }, uMask: { value: 1 },
       uSize: { value: small ? 13 : 15 }, uPixelRatio: { value: 1 }, uHalfX: { value: FIELD.halfX },
-      uColorA: { value: MINT.clone() }, uColorB: { value: BLUE }, uOpacity: { value: 1 },
+      uColorA: { value: AMBER.clone() }, uColorB: { value: ORANGE }, uOpacity: { value: 1 },
     },
     vertexShader: FIELD_VERTEX,
     fragmentShader: FIELD_FRAGMENT,
@@ -286,7 +286,7 @@ function init() {
   dustGeo.setAttribute("aSize",    new THREE.BufferAttribute(dustSize, 1));
   dustGeo.setAttribute("aPhase",   new THREE.BufferAttribute(dustPhase, 1));
   const dustMat = new THREE.ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uPixelRatio: { value: 1 }, uColor: { value: new THREE.Color("#b9d6ff") }, uOpacity: { value: 0.6 } },
+    uniforms: { uTime: { value: 0 }, uPixelRatio: { value: 1 }, uColor: { value: new THREE.Color("#ffe2b8") }, uOpacity: { value: 0.6 } },
     vertexShader: DUST_VERTEX,
     fragmentShader: DUST_FRAGMENT,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
@@ -326,7 +326,7 @@ function init() {
      camY  camera height above the waves      lookY  where it looks (higher = horizon lower on screen)
      yaw   field rotation                     amp    wave height
      o     field opacity                      mask   1 dims the left of the screen
-     roll  camera tilt (radians)              tone   0 mint … 1 violet */
+     roll  camera tilt (radians)              tone   0 amber … 1 rose */
   const sections = ["inicio", "sobre-mi", "experiencia", "proyectos", "skills", "educacion", "contacto"]
     .map(id => document.getElementById(id));
   const GALLERY = 3;
@@ -419,7 +419,7 @@ function init() {
     fieldMat.uniforms.uAmp.value     = cur.amp + energy * 0.45;
     fieldMat.uniforms.uMask.value    = cur.mask;
     fieldMat.uniforms.uOpacity.value = cur.o;
-    fieldMat.uniforms.uColorA.value.copy(MINT).lerp(VIOLET, cur.tone * 0.55);
+    fieldMat.uniforms.uColorA.value.copy(AMBER).lerp(ROSE, cur.tone * 0.55);
 
     auroraMat.uniforms.uTime.value  = time;
     auroraMat.uniforms.uPhase.value = travel * 0.55;
