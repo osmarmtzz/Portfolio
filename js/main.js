@@ -272,14 +272,20 @@
     const bar    = document.getElementById("progress");
     const header = document.getElementById("siteHeader");
     const topBtn = document.getElementById("scrollTopBtn");
+    const links  = document.getElementById("navLinks");
     let ticking = false;
+    let lastY = window.scrollY;
 
     function update() {
       ticking = false;
       const y   = window.scrollY;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       if (bar)    bar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
-      if (header) header.classList.toggle("scrolled", y > 40);
+      if (header && Math.abs(y - lastY) > 6) {
+        const menuOpen = links && links.classList.contains("open");
+        header.classList.toggle("nav-hidden", y > lastY && y > 160 && !menuOpen);
+        lastY = y;
+      }
       if (topBtn) topBtn.classList.toggle("visible", y > 600);
     }
     window.addEventListener("scroll", () => {
@@ -374,18 +380,28 @@
       })();
     }
 
-    // Ring that trails the pointer and grows over anything clickable
+    // Custom cursor: replaces the system pointer with a dot that tracks exactly
+    // and a ring that trails behind and grows over anything clickable
     const ring = document.createElement("div");
+    const dot  = document.createElement("div");
     ring.className = "cursor-ring";
+    dot.className  = "cursor-dot";
     ring.setAttribute("aria-hidden", "true");
-    document.body.appendChild(ring);
+    dot.setAttribute("aria-hidden", "true");
+    document.body.append(ring, dot);
+    document.documentElement.classList.add("has-cursor");
     let rx = innerWidth / 2, ry = innerHeight / 2, mx = rx, my = ry;
     window.addEventListener("pointermove", e => {
       mx = e.clientX; my = e.clientY;
+      dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
       ring.classList.add("on");
+      dot.classList.add("on");
       ring.classList.toggle("is-hover", !!e.target.closest("a, button, input, textarea, [data-tilt]"));
     }, { passive: true });
-    document.documentElement.addEventListener("pointerleave", () => ring.classList.remove("on"));
+    document.documentElement.addEventListener("pointerleave", () => {
+      ring.classList.remove("on");
+      dot.classList.remove("on");
+    });
     (function trail() {
       rx += (mx - rx) * 0.2; ry += (my - ry) * 0.2;
       ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;

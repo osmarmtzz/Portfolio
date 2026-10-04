@@ -483,13 +483,10 @@
   /* ============================================================
      ONE-OFF PIECES (not tied to the scroll position)
   ============================================================ */
-  // Preloader count + lift, then the hero entrance. Intro tweens target the
-  // letters and the .hero-fade items; heroFx animates their wrappers, so the
-  // two never fight over a property.
+  // Hero entrance. Intro tweens target the letters and the .hero-fade items;
+  // heroFx animates their wrappers, so the two never fight over a property.
   function intro() {
-    const pre   = document.getElementById("preloader");
-    const count = document.getElementById("preloaderCount");
-    if (!enabled()) { if (pre) pre.remove(); return; }
+    if (!enabled()) return;
 
     splitName();
 
@@ -507,21 +504,10 @@
         });
       }, 0.9);
 
-    const wait   = ms => new Promise(resolve => setTimeout(resolve, ms));
-    const fonts  = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
-    const tally  = { v: 0 };
-    const counted = new Promise(resolve => {
-      if (!count) { resolve(); return; }
-      gsap.to(tally, {
-        v: 100, duration: 1, ease: "power2.inOut",
-        onUpdate: () => { count.textContent = Math.round(tally.v); },
-        onComplete: resolve,
-      });
-    });
-    Promise.race([Promise.all([fonts, counted]), wait(2600)]).then(() => {
-      if (pre) gsap.to(pre, { yPercent: -100, duration: 0.9, ease: "power4.inOut", onComplete: () => pre.remove() });
-      gsap.delayedCall(pre ? 0.35 : 0, () => tl.play(0));
-    });
+    // Start as soon as the fonts are in, so the letters do not reflow mid-animation
+    const wait  = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    Promise.race([fonts, wait(1200)]).then(() => tl.play(0));
   }
 
   // Tech marquee: runs on its own, speeds up with the scroll and follows its direction.
