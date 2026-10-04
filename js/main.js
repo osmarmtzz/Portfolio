@@ -3,602 +3,397 @@
 
   const CONFIG = {
     contactEmail: "osmarenriquemtz@outlook.com",
-    cvPath: "assets/Osmar-CV.pdf",
   };
+
+  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const FINE_POINTER = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const HAS_GSAP = typeof gsap !== "undefined";
+  const FX = window.ScrollFX || null;   // js/scroll.js
 
   /* ============================================================
      TRANSLATIONS
+     Spanish lives in the HTML (captured at boot); English lives here.
   ============================================================ */
   const T = {
     es: {
-      /* nav */
-      "nav.about":    "Sobre mí",
-      "nav.services": "Servicios",
-      "nav.skills":   "Skills",
-      "nav.work":     "Proyectos",
-      "nav.career":   "Carrera",
-      "nav.contact":  "Contacto",
-      "nav.hireme":   "hire_me()",
-
-      /* hero */
-      "hero.tag":     "disponible para trabajar",
-      "hero.desc":    'Fullstack developer. Construyo apps con <em>Next.js</em>, <em>Laravel</em> y <em>React Native</em>. Deploy en <em>Vercel</em> y <em>DigitalOcean</em>.',
-      "hero.btn.projects": "Ver proyectos",
-      "hero.btn.contact":  "Contacto",
-      "hero.scroll":  "scroll ↓",
-      "stat.devexp":  "Año dev exp.",
-      "stat.projects":"Proyectos",
-      "stat.tech":    "Tecnologías",
-
-      /* about */
-      "about.title": 'Desarrollador<br/><span class="grad">Fullstack</span>',
-      "about.bio":   'Ingeniero en Sistemas Computacionales por la UAA con experiencia real en producción. Desarrollo apps web y móviles con <strong>Next.js</strong>, <strong>React</strong> y <strong>Laravel</strong>. Deploy en <strong>Vercel</strong> serverless o <strong>VPS DigitalOcean</strong>. React Native para iOS y Android. Certificado AWS Academy.',
-      "acard.backend.title":  "Backend",
-      "acard.backend.desc":   "Laravel MVC, Node.js, APIs REST, JWT, MySQL.",
-      "acard.frontend.title": "Frontend",
-      "acard.frontend.desc":  "Next.js, React, TypeScript, Angular.",
-      "acard.deploy.title":   "Deploy",
-      "acard.deploy.desc":    "Vercel serverless, DigitalOcean VPS, CI/CD.",
-      "acard.mobile.title":   "Móvil",
-      "acard.mobile.desc":    "React Native, Expo, WebRTC, FHIR HL7.",
-
-      /* services */
-      "svc.title":  '¿Qué <span class="grad">construyo?</span>',
-      "svc1.title": "Aplicaciones Web",
-      "svc1.desc":  "SPAs y webs con Next.js. SSR, SSG, SEO y deploy en Vercel con CI/CD automático.",
-      "svc2.title": "APIs & Backend",
-      "svc2.desc":  "REST APIs con Laravel o Node.js. JWT, roles, Swagger y base de datos relacional.",
-      "svc3.title": "Dashboards & Admin",
-      "svc3.desc":  "Paneles con gráficas, reportes, exportaciones y actualizaciones en tiempo real.",
-      "svc4.title": "Apps Móviles",
-      "svc4.desc":  "React Native para iOS y Android. Notificaciones, cámara, WebRTC y más.",
-      "svc5.title": "DevOps & Deploy",
-      "svc5.desc":  "Serverless en Vercel, VPS DigitalOcean configurado desde cero en Linux, CI/CD automático.",
-      "svc6.title": "E-commerce",
-      "svc6.desc":  "Tiendas con catálogo, carrito de compras, pagos Stripe/PayPal y panel admin.",
-
-      /* skills */
-      "skills.title": 'Stack & <span class="grad">Tecnologías</span>',
-      "sg.backend":   "Backend",
-      "sg.frontend":  "Frontend",
-      "sg.data":      "Data & Infra",
-
-      /* projects */
-      "proj.title":    'Proyectos <span class="grad">Destacados</span>',
-      "proj.featured": "featured",
-      "proj.live":     "Live demo →",
-      "proj0.title":   "Sistema de Gestión Hospitalaria",
-      "proj0.desc":    "Sistema modular en producción real con historial clínico, videollamadas WebRTC, notificaciones en tiempo real y prototipo FHIR HL7 para interoperabilidad de expedientes entre hospitales.",
-      "proj1.title":   "Dashboard Analítico",
-      "proj1.desc":    "Panel fullstack con Next.js 14, auth JWT, gráficas en tiempo real y deploy en Vercel.",
-      "proj2.title":   "E-commerce + Admin",
-      "proj2.desc":    "Tienda online con Next.js, carrito de compras, pagos Stripe y panel admin completo.",
-      "proj3.title":   "App de Videollamadas",
-      "proj3.desc":    "Comunicación en tiempo real con WebRTC, salas privadas y Socket.io.",
-      "proj4.title":   "CodeHub (PHP)",
-      "proj4.desc":    "Interfaz moderna para localhost — diseño limpio para desarrollo local y proyectos PHP.",
-      "proj5.title":   "Scripts & Automatizaciones",
-      "proj5.desc":    "Limpieza de datos, reportes automáticos y utilidades de flujo de trabajo.",
-
-      /* career */
-      "career.title":    'Experiencia & <span class="grad">Educación</span>',
-      "career.col.work": "work_experience",
-      "career.col.edu":  "education",
-      "exp.rd.title":  "Full Stack Developer",
-      "exp.rd.badge":  "1 año",
-      "exp.rd.desc":   'Desarrollo y mantenimiento del sistema web y móvil de gestión médica en producción. Backend en <strong>PHP MVC</strong> con APIs REST para integración entre servicios. Optimización de <strong>MySQL</strong>. Implementé prototipo de <strong>FHIR HL7</strong> para interoperabilidad de expedientes entre hospitales. Videollamadas con <strong>WebRTC</strong>, módulos móviles en <strong>React Native</strong>. Administración y <strong>seguridad de servidores VPS en Linux</strong> (firewall, SSH, nginx). Despliegues a producción con Git/GitHub.',
-      "exp.tp.title":  "Customer Service Representative",
-      "exp.tp.badge":  "1 año",
-      "exp.tp.desc":   "Atención a clientes internacionales en entorno bilingüe (español / inglés B2). Resolución de incidencias y seguimiento de casos bajo métricas de desempeño. Trabajo bajo presión cumpliendo objetivos de calidad y tiempos de respuesta.",
-      "edu.uaa.title": "Ingeniería en Sistemas Computacionales",
-      "edu.uaa.desc":  "Fullstack, bases de datos, redes, seguridad y apps móviles. Proyectos reales con PHP, React y MySQL.",
-      "edu.aws.title": "AWS Academy Graduate",
-      "edu.aws.desc":  "Cloud Security Foundations & Cloud Foundations. Infraestructura en la nube, seguridad, IAM y servicios AWS esenciales.",
-      "tag.support":   "Soporte",
-      "tag.customer":  "Atención al cliente",
-      "tag.certified": "Certificado AWS",
-
-      /* contact */
-      "contact.title":    '¿Hablamos?<br/><span class="grad">Escríbeme.</span>',
-      "contact.sub":      "¿Tienes un proyecto, vacante o idea? Respondo rápido.",
-      "contact.location": "México — remoto / híbrido",
-      "form.name":        "Nombre",
-      "form.name.ph":     "Tu nombre",
-      "form.email":       "Correo",
-      "form.email.ph":    "tu@email.com",
-      "form.msg":         "Mensaje",
-      "form.msg.ph":      "Cuéntame tu proyecto...",
-      "form.submit":      "Enviar mensaje",
-      "form.manual":      "Abrir correo manualmente",
-      "form.err.name":    "Nombre requerido.",
-      "form.err.email":   "Correo inválido.",
-      "form.err.msg":     "Mínimo 10 caracteres.",
-      "form.sent":        "¡Listo! Abriendo cliente de correo…",
-
-      /* footer */
-      "footer.copy": "© 2025 · Next.js · ▲ Vercel · DigitalOcean",
-      "cert.security":    "Cloud Security Foundations",
-      "cert.foundations": "Cloud Foundations",
+      "meta.title": "Osmar Martínez — Ingeniero de Software Full Stack",
+      "form.err.name":  "Escribe tu nombre.",
+      "form.err.email": "Correo inválido.",
+      "form.err.msg":   "Mínimo 10 caracteres.",
+      "form.sent":      "¡Listo! Abriendo tu cliente de correo…",
     },
 
     en: {
+      "meta.title": "Osmar Martínez — Full Stack Software Engineer",
+      "a11y.skip": "Skip to content",
+
       /* nav */
-      "nav.about":    "About",
-      "nav.services": "Services",
-      "nav.skills":   "Skills",
-      "nav.work":     "Work",
-      "nav.career":   "Career",
-      "nav.contact":  "Contact",
-      "nav.hireme":   "hire_me()",
+      "nav.about":   "Profile",
+      "nav.career":  "Experience",
+      "nav.work":    "Work",
+      "nav.skills":  "Skills",
+      "nav.edu":     "Education",
+      "nav.contact": "Contact",
+      "nav.cta":     "Let's talk",
 
       /* hero */
-      "hero.tag":     "available for work",
-      "hero.desc":    'Fullstack developer. I build apps with <em>Next.js</em>, <em>Laravel</em> & <em>React Native</em>. Deployed on <em>Vercel</em> and <em>DigitalOcean</em>.',
-      "hero.btn.projects": "View projects",
-      "hero.btn.contact":  "Contact",
-      "hero.scroll":  "scroll ↓",
-      "stat.devexp":  "Year dev exp.",
-      "stat.projects":"Projects",
-      "stat.tech":    "Technologies",
+      "hero.eyebrow": "Senior Software Engineer · Tech Lead at Landaii",
+      "hero.lead":    "Full stack software engineer. I build",
+      "hero.desc":    'I own the entire product: architecture, backend, interface, security, CI/CD and deployment. Specialized in <strong>Next.js</strong>, <strong>TypeScript</strong>, <strong>Supabase</strong> and <strong>AI agents</strong>.',
+      "hero.btn.exp": "View experience",
+      "hero.btn.cv":  "Download CV",
+      "hero.scroll":  "Scroll",
+      "stat.apps":      "Applications in production",
+      "stat.repos":     "Repositories audited every week",
+      "stat.countries": "Countries served: Mexico and the U.S.",
 
       /* about */
-      "about.title": 'Fullstack<br/><span class="grad">Developer</span>',
-      "about.bio":   'Computer Systems Engineer from UAA with real production experience. I build web and mobile apps with <strong>Next.js</strong>, <strong>React</strong> & <strong>Laravel</strong>. Deployed on <strong>Vercel</strong> serverless or <strong>DigitalOcean VPS</strong>. React Native for iOS and Android. AWS Academy certified.',
-      "acard.backend.title":  "Backend",
-      "acard.backend.desc":   "Laravel MVC, Node.js, REST APIs, JWT, MySQL.",
-      "acard.frontend.title": "Frontend",
-      "acard.frontend.desc":  "Next.js, React, TypeScript, Angular.",
-      "acard.deploy.title":   "Deploy",
-      "acard.deploy.desc":    "Vercel serverless, DigitalOcean VPS, CI/CD.",
-      "acard.mobile.title":   "Mobile",
-      "acard.mobile.desc":    "React Native, Expo, WebRTC, FHIR HL7.",
+      "about.label": "Profile",
+      "about.title": 'One engineer,<br/><em>the whole product.</em>',
+      "about.p1":    'Full stack software engineer focused on <strong>SaaS products</strong>, <strong>AI agents</strong> and <strong>cloud infrastructure</strong>. I take ownership of a complete product: architecture, backend, interface, security, CI/CD and deployment.',
+      "about.p2":    "I work with an AI-assisted development model, directing coding agents and reviewing every change before production, which lets me ship fast without sacrificing quality. I pick up new technologies on the go, work autonomously and explain technical decisions in business terms.",
+      "fact.location.k": "Location",
+      "fact.location.v": "Lagos de Moreno, Jalisco, Mexico",
+      "fact.role.k":     "Current role",
+      "fact.role.v":     "Tech Lead at Landaii · Remote",
+      "fact.lang.k":     "Languages",
+      "fact.lang.v":     "Spanish (native) · English (B2)",
+      "fact.edu.k":      "Education",
+      "fact.edu.v":      "B.Eng. Computer Systems Engineering, UAA",
+      "pillar1.t": "End-to-end product",
+      "pillar1.d": "Architecture, backend, interface, security, CI/CD and deployment under a single owner.",
+      "pillar2.t": "AI-assisted development",
+      "pillar2.d": "I direct coding agents and review every change before production: speed without losing quality.",
+      "pillar3.t": "Autonomy",
+      "pillar3.d": "I learn new technologies on the go and get the work done without constant supervision.",
+      "pillar4.t": "Business language",
+      "pillar4.d": "I explain technical decisions in terms the business understands and can evaluate.",
 
-      /* services */
-      "svc.title":  'What do I <span class="grad">build?</span>',
-      "svc1.title": "Web Applications",
-      "svc1.desc":  "SPAs and websites with Next.js. SSR, SSG, SEO and Vercel deploy with automatic CI/CD.",
-      "svc2.title": "APIs & Backend",
-      "svc2.desc":  "REST APIs with Laravel or Node.js. JWT, roles, Swagger and relational databases.",
-      "svc3.title": "Dashboards & Admin",
-      "svc3.desc":  "Panels with charts, reports, exports and real-time updates.",
-      "svc4.title": "Mobile Apps",
-      "svc4.desc":  "React Native for iOS and Android. Push notifications, camera, WebRTC and more.",
-      "svc5.title": "DevOps & Deploy",
-      "svc5.desc":  "Serverless on Vercel, DigitalOcean VPS configured from scratch on Linux, automatic CI/CD.",
-      "svc6.title": "E-commerce",
-      "svc6.desc":  "Stores with catalog, shopping cart, Stripe/PayPal payments and full admin panel.",
-
-      /* skills */
-      "skills.title": 'Stack & <span class="grad">Technologies</span>',
-      "sg.backend":   "Backend",
-      "sg.frontend":  "Frontend",
-      "sg.data":      "Data & Infra",
+      /* experience */
+      "exp.label":   "Experience",
+      "exp.title":   'Where I\'ve <em>built.</em>',
+      "exp.current": "Current role",
+      "exp.l.role":  "Senior Software Engineer · Tech Lead",
+      "exp.l.org":   "· Custom software agency for SMBs (Mexico and the U.S.) · Remote",
+      "exp.l.date":  "Apr 2026 — Present",
+      "exp.l.intro": 'Sole full-time engineer: responsible for the architecture, code, infrastructure and security of <strong>more than 30 web applications</strong> for clients and in-house products.',
+      "exp.l.b1":    'Built a <strong>multi-tenant SaaS platform for AI assistants</strong>: companies create their own assistant, load their information and install it on their website or app in minutes. It answers using semantic search over that information, automatically switches AI provider if one fails, and controls cost per assistant.',
+      "exp.l.b2":    'Connected those assistants to several clients\' applications so they answer with <strong>real, up-to-date data</strong> about the user who is asking (for example, their booking or their requests) through secure connections.',
+      "exp.l.b3":    'Developed a <strong>task and project management module</strong> that embeds inside other applications without the user signing in again, with assignment, approval and notifications.',
+      "exp.l.b4":    'Maintained and improved <strong>more than 30 applications in production</strong>: bug fixes, performance improvements, dependency upgrades, new features and client requests handled within defined response times.',
+      "exp.l.b5":    'Automated security and delivery: a <strong>weekly audit of 14 repositories</strong> that detects and fixes vulnerabilities on its own, plus controls so no change reaches production without tests and review.',
+      "exp.l.b6":    'Found and fixed <strong>critical vulnerabilities</strong> that allowed user account takeover in a financial application, and centralized control of the company\'s AI credentials with automatic renewal alerts.',
+      "exp.l.b7":    'Defined the <strong>team workflow</strong> (branching, code review, deployments and database changes) and documented it so AI agents apply it automatically.',
+      "exp.r.role":  "Junior Full Stack Developer",
+      "exp.r.org":   "· Web and mobile medical management system in production",
+      "exp.r.date":  "Dec 2024 — Jan 2026",
+      "exp.r.intro": "Started as an intern, then became a development trainee.",
+      "exp.r.b1":    'Developed and maintained a <strong>web and mobile medical management system</strong> in production, used daily by doctors and patients.',
+      "exp.r.b2":    'Built backend modules in <strong>PHP (MVC)</strong> and <strong>REST APIs</strong> to integrate internal and third-party services.',
+      "exp.r.b3":    'Designed and optimized the <strong>MySQL</strong> database, improving data integrity and query performance.',
+      "exp.r.b4":    'Implemented the <strong>digital clinical record</strong>, mobile features with <strong>React Native</strong> and doctor–patient video calls with <strong>WebRTC</strong>.',
+      "exp.r.b5":    'Took part in testing, production deployments and basic <strong>Linux</strong> server administration, with version control in Git/GitHub.',
 
       /* projects */
-      "proj.title":    'Featured <span class="grad">Projects</span>',
-      "proj.featured": "featured",
-      "proj.live":     "Live demo →",
-      "proj0.title":   "Hospital Management System",
-      "proj0.desc":    "Modular system in real production with clinical records, WebRTC video calls, real-time notifications and a FHIR HL7 prototype for interoperability between hospital systems.",
-      "proj1.title":   "Analytics Dashboard",
-      "proj1.desc":    "Fullstack panel with Next.js 14, JWT auth, real-time charts and Vercel deploy.",
-      "proj2.title":   "E-commerce + Admin",
-      "proj2.desc":    "Online store with Next.js, shopping cart, Stripe payments and full admin panel.",
-      "proj3.title":   "Video Call App",
-      "proj3.desc":    "Real-time communication with WebRTC, private rooms and Socket.io.",
-      "proj4.title":   "CodeHub (PHP)",
-      "proj4.desc":    "Modern interface for localhost — clean design for local development and PHP projects.",
-      "proj5.title":   "Scripts & Automation",
-      "proj5.desc":    "Data cleaning, automated reports and workflow utilities.",
+      "proj.label": "Selected work",
+      "proj.title": 'What I\'ve <em>shipped.</em>',
+      "proj.sub":   "Products and systems in production for real clients. The code is private; the impact isn't.",
+      "proj.hint":  "Keep scrolling",
+      "proj1.t": "AI assistant SaaS platform",
+      "proj1.d": "Multi-tenant platform where each company creates its own assistant, loads its information and installs it on its website or app in minutes. It answers with semantic search, automatically switches AI provider if one fails, and controls cost per assistant.",
+      "flow.1":  "Your information",
+      "flow.2":  "Semantic search",
+      "flow.3":  "AI with fallback",
+      "flow.4":  "Website / app",
+      "proj2.t": "Assistants with live data",
+      "proj2.d": "Integration of the assistants with several clients' applications: they answer with real, up-to-date data about the user who is asking — their booking, their requests — through secure connections.",
+      "proj3.t": "Task and project module",
+      "proj3.d": "Task management that embeds inside other applications without the user signing in again, with assignment, approval and notifications.",
+      "proj4.t": "Automated security and delivery",
+      "proj4.d": "Weekly audit of 14 repositories that detects and fixes vulnerabilities on its own, plus controls so no change reaches production without tests and review.",
+      "proj5.t": "Hardening a financial app",
+      "proj5.d": "Detection and remediation of critical vulnerabilities that allowed user account takeover, and centralized control of AI credentials with automatic renewal alerts.",
+      "proj6.t": "Medical management system",
+      "proj6.d": "Web and mobile system in production, used daily by doctors and patients: digital clinical record, mobile app and real-time doctor–patient video calls.",
+      "chip.fallback":  "Provider fallback",
+      "chip.cost":      "Cost control",
+      "chip.tools":     "Tool-using agents",
+      "chip.secure":    "Secure connections",
+      "chip.embed":     "Embeddable",
+      "chip.sso":       "Shared session",
+      "chip.notif":     "Notifications",
+      "chip.workflows": "Reusable workflows",
+      "chip.audit":     "Code auditing",
+      "chip.creds":     "Credential management",
+      "chip.aws":       "AWS (fundamentals)",
+      "chip.hmac":      "HMAC & signed tokens",
 
-      /* career */
-      "career.title":    'Experience & <span class="grad">Education</span>',
-      "career.col.work": "work_experience",
-      "career.col.edu":  "education",
-      "exp.rd.title":  "Full Stack Developer",
-      "exp.rd.badge":  "1 year",
-      "exp.rd.desc":   'Development and maintenance of a web & mobile medical management system in production. <strong>PHP MVC</strong> backend with REST APIs for service integration. <strong>MySQL</strong> optimization. Implemented a <strong>FHIR HL7</strong> prototype for hospital record interoperability. Real-time video calls with <strong>WebRTC</strong>, mobile modules in <strong>React Native</strong>. Administration and <strong>security of VPS servers on Linux</strong> (firewall, SSH, nginx). Production deployments with Git/GitHub.',
-      "exp.tp.title":  "Customer Service Representative",
-      "exp.tp.badge":  "1 year",
-      "exp.tp.desc":   "Support for international clients in a bilingual environment (Spanish / English B2). Incident resolution and case tracking under performance metrics. Work under pressure meeting quality objectives and response times.",
-      "edu.uaa.title": "Computer Systems Engineering",
-      "edu.uaa.desc":  "Fullstack, databases, networking, security and mobile apps. Real projects with PHP, React and MySQL.",
-      "edu.aws.title": "AWS Academy Graduate",
-      "edu.aws.desc":  "Cloud Security Foundations & Cloud Foundations. Cloud infrastructure, security, IAM and core AWS services.",
-      "tag.support":   "Support",
-      "tag.customer":  "Customer service",
-      "tag.certified": "AWS Certified",
+      /* skills */
+      "skills.label": "Skills",
+      "skills.title": 'Stack and <em>tooling.</em>',
+      "sk.db":    "Databases",
+      "sk.ai":    "Artificial intelligence",
+      "sk.infra": "Infrastructure & services",
+      "sk.cicd":  "CI/CD & security",
+      "sk.integ": "Integrations",
+      "sk.tools": "Tools",
+
+      /* education */
+      "edu.label": "Education",
+      "edu.title": 'Education and <em>certifications.</em>',
+      "edu.uaa.t": "B.Eng. in Computer Systems Engineering",
+      "edu.uaa.d": "Universidad Autónoma de Aguascalientes",
+      "edu.aws.t": "AWS Academy Graduate",
+      "edu.lang.k":      "Languages",
+      "edu.lang.es":     "Spanish",
+      "edu.lang.native": "Native",
+      "edu.lang.en":     "English",
 
       /* contact */
-      "contact.title":    'Let\'s talk?<br/><span class="grad">Write to me.</span>',
-      "contact.sub":      "Have a project, job offer or idea? I reply fast.",
-      "contact.location": "Mexico — remote / hybrid",
-      "form.name":        "Name",
-      "form.name.ph":     "Your name",
-      "form.email":       "Email",
-      "form.email.ph":    "you@email.com",
-      "form.msg":         "Message",
-      "form.msg.ph":      "Tell me about your project...",
-      "form.submit":      "Send message",
-      "form.manual":      "Open email manually",
-      "form.err.name":    "Name is required.",
-      "form.err.email":   "Invalid email.",
-      "form.err.msg":     "Minimum 10 characters.",
-      "form.sent":        "Done! Opening your email client…",
+      "contact.label":    "Contact",
+      "contact.title":    'Shall we build<br/><em>something together?</em>',
+      "contact.sub":      "Have a project, an open role or an idea? Write to me and I'll get back to you soon.",
+      "contact.location": "Lagos de Moreno, Jalisco, Mexico · Remote",
+      "form.name":     "Name",
+      "form.name.ph":  "Your name",
+      "form.email":    "Email",
+      "form.email.ph": "you@email.com",
+      "form.msg":      "Message",
+      "form.msg.ph":   "Tell me about your project...",
+      "form.submit":   "Send message",
+      "form.manual":   "Open email manually",
+      "form.err.name":  "Please enter your name.",
+      "form.err.email": "Invalid email.",
+      "form.err.msg":   "Minimum 10 characters.",
+      "form.sent":      "Done! Opening your email client…",
 
       /* footer */
-      "footer.copy": "© 2025 · Next.js · ▲ Vercel · DigitalOcean",
-      "cert.security":    "Cloud Security Foundations",
-      "cert.foundations": "Cloud Foundations",
+      "footer.copy": "Built with Three.js and GSAP · Deployed on Vercel",
     },
+  };
+
+  const ROTATOR_WORDS = {
+    es: ["productos SaaS", "agentes de IA", "infraestructura en la nube", "apps web y móviles"],
+    en: ["SaaS products", "AI agents", "cloud infrastructure", "web & mobile apps"],
   };
 
   /* ============================================================
      LANGUAGE SYSTEM
   ============================================================ */
-  let currentLang = localStorage.getItem("lang") || "es";
-  let typedInstance = null;
+  let currentLang = "es";
+  try { currentLang = localStorage.getItem("lang") === "en" ? "en" : "es"; } catch (_) { /* storage blocked */ }
+
+  function captureSpanish() {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      if (T.es[el.dataset.i18n] === undefined) T.es[el.dataset.i18n] = el.innerHTML.trim();
+    });
+    document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+      T.es[el.dataset.i18nPh] = el.placeholder;
+    });
+  }
 
   function applyLang(lang) {
     currentLang = lang;
-    localStorage.setItem("lang", lang);
+    try { localStorage.setItem("lang", lang); } catch (_) { /* storage blocked */ }
     document.documentElement.lang = lang;
+    document.title = T[lang]["meta.title"];
 
-    // Text content
+    // Scroll animations split text into spans, so they are rebuilt around the swap
+    if (FX) FX.teardown();
+
     document.querySelectorAll("[data-i18n]").forEach(el => {
-      const key = el.dataset.i18n;
-      if (T[lang][key] !== undefined) el.textContent = T[lang][key];
+      const v = T[lang][el.dataset.i18n];
+      if (v !== undefined) el.innerHTML = v;
     });
-
-    // HTML content
-    document.querySelectorAll("[data-i18n-html]").forEach(el => {
-      const key = el.dataset.i18nHtml;
-      if (T[lang][key] !== undefined) el.innerHTML = T[lang][key];
-    });
-
-    // Placeholders
     document.querySelectorAll("[data-i18n-ph]").forEach(el => {
-      const key = el.dataset.i18nPh;
-      if (T[lang][key] !== undefined) el.placeholder = T[lang][key];
+      const v = T[lang][el.dataset.i18nPh];
+      if (v !== undefined) el.placeholder = v;
+    });
+    document.querySelectorAll(".lang-opt").forEach(opt => {
+      opt.classList.toggle("active", opt.dataset.lang === lang);
     });
 
-    // Toggle button state
-    document.querySelectorAll(".lang-opt").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.lang === lang);
-    });
-
-    // Reinit Typed.js with language-specific strings
-    if (typedInstance) {
-      typedInstance.destroy();
-      typedInstance = null;
-    }
-    initTyped();
+    restartRotator();
+    if (FX) FX.build();
   }
 
   function initLangToggle() {
-    document.querySelectorAll(".lang-opt").forEach(btn => {
-      btn.addEventListener("click", () => {
-        if (btn.dataset.lang !== currentLang) applyLang(btn.dataset.lang);
+    const btn = document.getElementById("langToggle");
+    if (!btn) return;
+    btn.addEventListener("click", () => applyLang(currentLang === "es" ? "en" : "es"));
+  }
+
+  /* ============================================================
+     HERO ROTATOR
+  ============================================================ */
+  let rotatorTimer = null;
+  let rotatorIndex = 0;
+
+  function restartRotator() {
+    const el = document.getElementById("rotatorWord");
+    if (!el) return;
+    clearInterval(rotatorTimer);
+    rotatorIndex = 0;
+    el.textContent = ROTATOR_WORDS[currentLang][0];
+    if (REDUCED) return;
+
+    rotatorTimer = setInterval(() => {
+      const words = ROTATOR_WORDS[currentLang];
+      rotatorIndex = (rotatorIndex + 1) % words.length;
+      if (!HAS_GSAP) { el.textContent = words[rotatorIndex]; return; }
+      gsap.to(el, {
+        yPercent: -110, duration: 0.45, ease: "power3.in",
+        onComplete: () => {
+          el.textContent = words[rotatorIndex];
+          gsap.fromTo(el, { yPercent: 110 }, { yPercent: 0, duration: 0.6, ease: "power3.out" });
+        },
       });
-    });
+    }, 2600);
   }
 
   /* ============================================================
-     TYPED.JS (called by applyLang too)
+     SCROLL-DRIVEN CHROME (progress bar, header, back-to-top)
   ============================================================ */
-  const TYPED_STRINGS = {
-    es: [
-      "fullstack_developer()",
-      "next_js_engineer()",
-      "laravel_backend()",
-      "react_native_dev()",
-      "fhir_hl7_implementor()",
-      "open_to_work → true",
-    ],
-    en: [
-      "fullstack_developer()",
-      "next_js_engineer()",
-      "laravel_backend()",
-      "react_native_dev()",
-      "fhir_hl7_implementor()",
-      "open_to_work → true",
-    ],
-  };
-
-  function initTyped() {
-    const el = document.getElementById("typedText");
-    if (!el || typeof Typed === "undefined") return;
-    typedInstance = new Typed(el, {
-      strings: TYPED_STRINGS[currentLang],
-      typeSpeed: 42, backSpeed: 25, backDelay: 1800, loop: true,
-    });
+  function scrollToTarget(target) {
+    if (FX) FX.scrollTo(target);
+    else if (target === 0) window.scrollTo({ top: 0, behavior: REDUCED ? "auto" : "smooth" });
+    else target.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" });
   }
 
-  /* ============================================================
-     LENIS
-  ============================================================ */
-  let lenis;
-  function initLenis() {
-    lenis = new Lenis({
-      duration: 1.15,
-      easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    });
-    lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add(time => lenis.raf(time * 1000));
-    gsap.ticker.lagSmoothing(0);
-  }
-
-  /* ============================================================
-     CURSOR
-  ============================================================ */
-  function initCursor() {
-    const dot  = document.getElementById("cursorDot");
-    const ring = document.getElementById("cursorRing");
-    if (!dot || !ring || window.innerWidth < 768) return;
-
-    document.addEventListener("mousemove", e => {
-      gsap.to(dot,  { x: e.clientX, y: e.clientY, duration: 0.05, overwrite: true });
-      gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.18, overwrite: true });
-    });
-
-    const hoverEls = "a, button, [data-tilt], .svc-card, .proj-card, .about-card, .exp-card";
-    document.querySelectorAll(hoverEls).forEach(el => {
-      el.addEventListener("mouseenter", () => ring.classList.add("hover"));
-      el.addEventListener("mouseleave", () => ring.classList.remove("hover"));
-    });
-  }
-
-  /* ============================================================
-     SCROLL PROGRESS
-  ============================================================ */
-  function initScrollBar() {
-    const bar = document.getElementById("scrollBar");
-    if (!bar) return;
-    lenis.on("scroll", ({ progress }) => { bar.style.width = (progress * 100) + "%"; });
-  }
-
-  /* ============================================================
-     HEADER
-  ============================================================ */
-  function initHeader() {
+  function initScrollChrome() {
+    const bar    = document.getElementById("progress");
     const header = document.getElementById("siteHeader");
-    if (!header) return;
-    lenis.on("scroll", ({ scroll }) => header.classList.toggle("scrolled", scroll > 50));
+    const topBtn = document.getElementById("scrollTopBtn");
+    let ticking = false;
+
+    function update() {
+      ticking = false;
+      const y   = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (bar)    bar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+      if (header) header.classList.toggle("scrolled", y > 40);
+      if (topBtn) topBtn.classList.toggle("visible", y > 600);
+    }
+    window.addEventListener("scroll", () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+
+    if (topBtn) topBtn.addEventListener("click", () => scrollToTarget(0));
   }
 
   /* ============================================================
-     MOBILE NAV
+     NAV
   ============================================================ */
-  function initMobileNav() {
+  function initNav() {
     const btn   = document.getElementById("menuBtn");
     const links = document.getElementById("navLinks");
-    if (!btn || !links) return;
 
-    btn.addEventListener("click", () => {
-      const open = links.classList.toggle("open");
+    function setOpen(open) {
+      if (!btn || !links) return;
+      links.classList.toggle("open", open);
       btn.classList.toggle("open", open);
-      btn.setAttribute("aria-expanded", open);
-    });
-
-    links.querySelectorAll("a").forEach(a => {
-      a.addEventListener("click", () => {
-        links.classList.remove("open");
-        btn.classList.remove("open");
-        btn.setAttribute("aria-expanded", false);
-      });
-    });
+      btn.setAttribute("aria-expanded", String(open));
+      if (FX) FX.lock(open);
+    }
+    if (btn && links) {
+      btn.addEventListener("click", () => setOpen(!links.classList.contains("open")));
+      document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
+    }
 
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener("click", e => {
-        const target = document.querySelector(a.getAttribute("href"));
+        const id = a.getAttribute("href");
+        if (id.length < 2) return;
+        const target = document.querySelector(id);
         if (!target) return;
         e.preventDefault();
-        lenis.scrollTo(target, { offset: -80 });
+        setOpen(false);
+        scrollToTarget(id === "#inicio" ? 0 : target);
       });
     });
-  }
 
-  /* ============================================================
-     ACTIVE NAV
-  ============================================================ */
-  function initActiveNav() {
-    const sections = document.querySelectorAll("section[id]");
-    const links    = document.querySelectorAll(".nav-links a[href^='#']");
+    // Active link
+    const navLinks = document.querySelectorAll(".nav-links a[href^='#']");
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting)
-          links.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + e.target.id));
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach(l => l.classList.toggle("active", l.getAttribute("href") === "#" + entry.target.id));
       });
-    }, { rootMargin: "-40% 0px -55% 0px" });
-    sections.forEach(s => obs.observe(s));
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    document.querySelectorAll("main section[id]").forEach(s => obs.observe(s));
   }
 
   /* ============================================================
-     VANILLA TILT
+     POINTER EFFECTS (cursor glow, card spotlight, 3D tilt, magnetic)
   ============================================================ */
-  function initTilt() {
-    if (typeof VanillaTilt === "undefined") return;
-    VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
-      max: 6, speed: 600, glare: false,
-    });
-  }
+  function initPointerEffects() {
+    if (!FINE_POINTER) return;
 
-  /* ============================================================
-     CV CHECK
-  ============================================================ */
-  function initCvBtn() {
-    const btn = document.getElementById("cvBtn");
-    if (!btn) return;
-    fetch(CONFIG.cvPath, { method: "HEAD" })
-      .then(r => { if (!r.ok) btn.removeAttribute("download"); })
-      .catch(() => btn.removeAttribute("download"));
-  }
-
-  /* ============================================================
-     YEAR
-  ============================================================ */
-  function initYear() {
-    const el = document.getElementById("currentYear");
-    if (el) el.textContent = new Date().getFullYear();
-
-    // Also update footer copy with real year
-    document.querySelectorAll("[data-i18n='footer.copy']").forEach(el => {
-      el.textContent = `© ${new Date().getFullYear()} · Next.js · ▲ Vercel · DigitalOcean`;
-    });
-  }
-
-  /* ============================================================
-     SCROLL TO TOP
-  ============================================================ */
-  function initScrollTop() {
-    const btn = document.getElementById("scrollTopBtn");
-    if (!btn) return;
-    lenis.on("scroll", ({ scroll }) => btn.classList.toggle("visible", scroll > 400));
-    btn.addEventListener("click", () => lenis.scrollTo(0));
-  }
-
-  /* ============================================================
-     RIPPLE
-  ============================================================ */
-  function initRipple() {
-    document.querySelectorAll(".btn-primary").forEach(btn => {
-      btn.addEventListener("click", e => {
-        const r    = document.createElement("span");
-        r.className = "ripple";
-        const rect = btn.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size / 2}px;top:${e.clientY - rect.top - size / 2}px;`;
-        btn.appendChild(r);
-        r.addEventListener("animationend", () => r.remove());
+    // Spotlight position for every card
+    document.querySelectorAll(".card").forEach(card => {
+      card.addEventListener("pointermove", e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        card.style.setProperty("--my", `${e.clientY - r.top}px`);
       });
     });
-  }
 
-  /* ============================================================
-     GSAP ANIMATIONS
-  ============================================================ */
-  function initAnimations() {
-    gsap.registerPlugin(ScrollTrigger);
+    if (REDUCED) return;
 
-    const heroTl = gsap.timeline({ delay: 0.05 });
-    heroTl
-      .from(".hero-tag",  { opacity: 0, y: 16, duration: 0.5, ease: "power3.out" })
-      .from(".line-text", { y: "110%", duration: 0.9, stagger: 0.14, ease: "power4.out" }, "-=0.2")
-      .from(".hero-typed-row", { opacity: 0, y: 12, duration: 0.5 }, "-=0.3")
-      .from(".hero-desc",      { opacity: 0, y: 12, duration: 0.5 }, "-=0.35")
-      .from(".hero-actions > *", { opacity: 0, y: 12, stagger: 0.08, duration: 0.45 }, "-=0.3")
-      .from(".stat",           { opacity: 0, y: 12, stagger: 0.1, duration: 0.45 }, "-=0.35")
-      .from(".terminal",       { opacity: 0, x: 50, duration: 1, ease: "power3.out" }, "-=0.8")
-      .from(".chip",           { opacity: 0, scale: 0.7, stagger: 0.1, duration: 0.45, ease: "back.out(2)" }, "-=0.55");
+    // Ambient glow that trails the cursor
+    const glow = document.getElementById("cursorGlow");
+    if (glow) {
+      let gx = innerWidth / 2, gy = innerHeight / 2, tx = gx, ty = gy;
+      window.addEventListener("pointermove", e => {
+        tx = e.clientX; ty = e.clientY;
+        glow.classList.add("on");
+      }, { passive: true });
+      (function follow() {
+        gx += (tx - gx) * 0.12; gy += (ty - gy) * 0.12;
+        glow.style.transform = `translate3d(${gx}px, ${gy}px, 0)`;
+        requestAnimationFrame(follow);
+      })();
+    }
 
-    gsap.to(".hero-content", {
-      scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: 1.2 },
-      y: -50, opacity: 0.4,
+    // 3D tilt. Uses the standalone CSS `rotate` property (axis + angle) so it
+    // composes with the transforms GSAP writes for the scroll animations.
+    const MAX_TILT = 9;
+    document.querySelectorAll("[data-tilt]").forEach(el => {
+      el.addEventListener("pointerenter", () => el.classList.add("is-tilting"));
+      el.addEventListener("pointermove", e => {
+        const r  = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width  - 0.5;
+        const py = (e.clientY - r.top)  / r.height - 0.5;
+        el.style.setProperty("--tilt-x", (-py).toFixed(3));
+        el.style.setProperty("--tilt-y", px.toFixed(3));
+        el.style.setProperty("--tilt-angle", `${(Math.min(1, Math.hypot(px, py) * 1.6) * MAX_TILT).toFixed(2)}deg`);
+      });
+      el.addEventListener("pointerleave", () => {
+        el.classList.remove("is-tilting");
+        el.style.setProperty("--tilt-angle", "0deg");
+      });
     });
 
-    gsap.utils.toArray(".sec-head").forEach(el => {
-      gsap.from(el, { scrollTrigger: { trigger: el, start: "top 88%" }, opacity: 0, x: -20, duration: 0.6, ease: "power3.out" });
-    });
-
-    gsap.utils.toArray(".sec-title").forEach(el => {
-      gsap.from(el, { scrollTrigger: { trigger: el, start: "top 88%" }, opacity: 0, y: 28, duration: 0.8, ease: "power3.out" });
-    });
-
-    gsap.from(".about-bio, .about-tags", {
-      scrollTrigger: { trigger: ".about-layout", start: "top 85%" },
-      opacity: 0, x: -30, stagger: 0.15, duration: 0.7, ease: "power3.out",
-    });
-    gsap.from(".about-card", {
-      scrollTrigger: { trigger: ".about-right", start: "top 85%" },
-      opacity: 0, y: 24, scale: 0.97, stagger: 0.1, duration: 0.6, ease: "power3.out",
-    });
-
-    gsap.from(".svc-card", {
-      scrollTrigger: { trigger: ".services-grid", start: "top 85%" },
-      opacity: 0, y: 28, stagger: 0.08, duration: 0.65, ease: "power3.out",
-    });
-
-    gsap.from(".skill-group", {
-      scrollTrigger: { trigger: ".skills-wrap", start: "top 85%" },
-      opacity: 0, y: 28, stagger: 0.15, duration: 0.7, ease: "power3.out",
-    });
-
-    ScrollTrigger.create({
-      trigger: ".skills-wrap",
-      start: "top 75%",
-      onEnter: () => {
-        document.querySelectorAll(".skill-fill").forEach(bar => {
-          gsap.to(bar, {
-            width: (bar.dataset.w || "0") + "%", duration: 1.1, ease: "power2.out",
-            onComplete: () => bar.classList.add("done"),
-          });
-        });
-      },
-    });
-
-    gsap.from(".proj-card", {
-      scrollTrigger: { trigger: ".projects-grid", start: "top 85%" },
-      opacity: 0, y: 26, scale: 0.97, stagger: 0.09, duration: 0.65, ease: "power3.out",
-    });
-
-    gsap.from(".career-col", {
-      scrollTrigger: { trigger: ".career-layout", start: "top 85%" },
-      opacity: 0, x: -28, stagger: 0.15, duration: 0.7, ease: "power3.out",
-    });
-
-    gsap.from(".contact-left", {
-      scrollTrigger: { trigger: ".contact-layout", start: "top 85%" },
-      opacity: 0, y: 22, duration: 0.7, ease: "power3.out",
-    });
-    gsap.from(".contact-right", {
-      scrollTrigger: { trigger: ".contact-layout", start: "top 85%" },
-      opacity: 0, x: 28, duration: 0.7, ease: "power3.out", delay: 0.1,
-    });
-  }
-
-  /* ============================================================
-     COUNTERS
-  ============================================================ */
-  function initCounters() {
-    const nums = document.querySelectorAll("[data-counter]");
-    if (!nums.length) return;
-    ScrollTrigger.create({
-      trigger: ".hero-stats",
-      start: "top 85%",
-      onEnter: () => {
-        nums.forEach(el => {
-          const target = parseInt(el.dataset.counter, 10);
-          gsap.to({ v: 0 }, {
-            v: target, duration: 1.6, ease: "power2.out",
-            onUpdate: function () { el.textContent = Math.floor(this.targets()[0].v); },
-          });
-        });
-      },
-    });
-  }
-
-  /* ============================================================
-     MAGNETIC BUTTONS
-  ============================================================ */
-  function initMagnetic() {
-    if (window.innerWidth < 768) return;
-    document.querySelectorAll(".btn-primary, .nav-btn").forEach(el => {
-      el.addEventListener("mousemove", e => {
+    // Magnetic buttons
+    if (!HAS_GSAP) return;
+    document.querySelectorAll("[data-magnetic]").forEach(el => {
+      el.addEventListener("pointermove", e => {
         const r = el.getBoundingClientRect();
         gsap.to(el, {
-          x: (e.clientX - r.left - r.width  / 2) * 0.22,
-          y: (e.clientY - r.top  - r.height / 2) * 0.22,
+          x: (e.clientX - r.left - r.width  / 2) * 0.25,
+          y: (e.clientY - r.top  - r.height / 2) * 0.25,
           duration: 0.4, ease: "power2.out",
         });
       });
-      el.addEventListener("mouseleave", () => {
-        gsap.to(el, { x: 0, y: 0, duration: 0.65, ease: "elastic.out(1,0.4)" });
+      el.addEventListener("pointerleave", () => {
+        gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.45)" });
       });
     });
   }
 
   /* ============================================================
-     CONTACT FORM
+     CONTACT FORM (opens the visitor's mail client)
   ============================================================ */
   function initContactForm() {
     const form    = document.getElementById("contactForm");
@@ -617,7 +412,7 @@
       if (el) el.textContent = "";
     }
 
-    ["cname","cemail","cmessage"].forEach(id => {
+    ["cname", "cemail", "cmessage"].forEach(id => {
       document.getElementById(id)?.addEventListener("input", () => clearErr(id));
     });
 
@@ -628,17 +423,17 @@
       const email   = document.getElementById("cemail")?.value.trim()   || "";
       const message = document.getElementById("cmessage")?.value.trim() || "";
 
-      if (!name)                                                    { showErr("cname",    "form.err.name");  ok = false; }
-      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))    { showErr("cemail",   "form.err.email"); ok = false; }
-      if (message.length < 10)                                      { showErr("cmessage", "form.err.msg");   ok = false; }
+      if (!name)                                                 { showErr("cname",    "form.err.name");  ok = false; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))   { showErr("cemail",   "form.err.email"); ok = false; }
+      if (message.length < 10)                                   { showErr("cmessage", "form.err.msg");   ok = false; }
       if (!ok) return;
 
       const subject = encodeURIComponent("Portfolio — " + name);
-      const body    = encodeURIComponent(`${T[currentLang]["form.name"] || "Name"}: ${name}\n${T[currentLang]["form.email"] || "Email"}: ${email}\n\n${message}`);
+      const body    = encodeURIComponent(`${T[currentLang]["form.name"]}: ${name}\n${T[currentLang]["form.email"]}: ${email}\n\n${message}`);
       const mailto  = `mailto:${CONFIG.contactEmail}?subject=${subject}&body=${body}`;
 
       formMsg.className = "fmsg ok";
-      formMsg.textContent = T[currentLang]["form.sent"] || "Done!";
+      formMsg.textContent = T[currentLang]["form.sent"];
       if (mailBtn) { mailBtn.href = mailto; mailBtn.classList.remove("hidden"); }
       window.location.href = mailto;
       form.reset();
@@ -649,28 +444,19 @@
      BOOT
   ============================================================ */
   function boot() {
-    initLenis();
-    initCursor();
-    initScrollBar();
-    initHeader();
-    initMobileNav();
-    initActiveNav();
+    const year = document.getElementById("currentYear");
+    if (year) year.textContent = new Date().getFullYear();
+
+    captureSpanish();
+    applyLang(currentLang);
+    if (FX) FX.init();          // smooth scroll + every scroll-driven animation (js/scroll.js)
+    initScrollChrome();
+    initNav();
     initLangToggle();
-    applyLang(currentLang);   // apply saved language (also inits Typed)
-    initTilt();
-    initCvBtn();
-    initYear();
-    initScrollTop();
-    initAnimations();
-    initCounters();
-    initRipple();
-    initMagnetic();
+    initPointerEffects();
     initContactForm();
   }
 
-  if (document.readyState === "loading")
-    document.addEventListener("DOMContentLoaded", boot);
-  else
-    boot();
-
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
 })();
